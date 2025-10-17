@@ -1,7 +1,15 @@
-import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 function App() {
-  return <></>;
+  return (
+    <>
+      <Toaster />
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
 }
 
 export default App;
