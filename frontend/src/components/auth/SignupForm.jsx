@@ -3,6 +3,8 @@ import { FcGoogle } from "react-icons/fc";
 import toast from "react-hot-toast";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -12,23 +14,47 @@ const SignupForm = () => {
   const [selectedRegion, setSelectedRegion] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const [hasLetters, setHasLetters] = useState(true);
+  const [hasNumbers, setHasNumbers] = useState(true);
+  const [isLongEnough, setIsLongEnough] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
+
+  //check password
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    setHasLetters(/[a-zA-Z]/.test(value));
+    setHasNumbers(/\d/.test(value));
+    setIsLongEnough(value.length >= 6);
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
-    //make api call here
 
-    if (error) {
+    //check email
+    if (!emailRegex.test(email)) {
+      toast.error("Enter a valid email.");
+    }
+    try {
+      //make api call here
+      // toast.success("Account created! Please check your email for verification.");
+      //routing logic
+      navigate("/auth/survey");
+    } catch (error) {
       console.log("Error in handleSignUp: ", error.message);
       toast.error(error.message || "Signup failed. Please try again.");
       setLoading(false);
       return;
-    } else {
-      toast.success(
-        "Account created! Please check your email for verification."
-      );
-      router.push("/auth/signup/checkemail");
     }
+  };
+
+  const handlePasswordToggle = () => {
+    setShowPassword(!showPassword);
   };
 
   const signInWithGoogle = () => {};
@@ -96,15 +122,49 @@ const SignupForm = () => {
             placeholder="Email"
           />
         </div>
-        <div className="flex flex-col mb-4 w-full">
-          <input
-            type="password"
-            id="password"
-            className="w-full px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            placeholder="Password"
-          />
+        <div
+          className={
+            isLongEnough && hasLetters && hasNumbers
+              ? "flex flex-col w-full mb-4"
+              : "flex flex-col w-full"
+          }
+        >
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              className="w-full px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30 after"
+              onChange={(e) => handleChange(e)}
+              value={password}
+              placeholder="Password"
+            />
+            <div
+              className="absolute top-0.5 right-2 grid place-items-center aspect-square text-gray/50 w-11 text-lg cursor-pointer hover:text-gray duration-200"
+              onClick={handlePasswordToggle}
+            >
+              {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
+            </div>
+          </div>
+
+          <div className="my-0.5">
+            <div className="flex items-center gap-1">
+              <span className={hasLetters ? "hidden" : "text-red-600 text-xs"}>
+                Needs at least one letter
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className={hasNumbers ? "hidden" : "text-red-600 text-xs"}>
+                Needs at least one number
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span
+                className={isLongEnough ? "hidden" : "text-red-600 text-xs"}
+              >
+                Needs at least 6 characters
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="relative w-full mb-4" ref={dropdownRef}>
@@ -117,7 +177,9 @@ const SignupForm = () => {
             </span>
             <MdOutlineKeyboardArrowDown
               size={20}
-              className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+              className={`text-gray/50 transition-transform ${
+                isOpen ? "rotate-180" : ""
+              }`}
             />
           </div>
 
@@ -144,7 +206,7 @@ const SignupForm = () => {
           )}
         </div>
         <button
-          className="w-full h-10 bg-accent rounded-lg text-white text-xs hover:bg-light-accent duration-300 cursor-pointer grid place-content-center"
+          className="w-full h-10 bg-accent rounded-lg text-white text-sm hover:bg-light-accent duration-300 cursor-pointer grid place-content-center"
           type="submit"
         >
           {loading ? "Loading..." : "Continue"}

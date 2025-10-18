@@ -1,8 +1,8 @@
 import React from "react";
-import SignupForm from "../../components/auth/SignupForm";
+import LoginForm from "../../components/auth/LoginForm";
 import { motion } from "motion/react";
 
-const Signup = () => {
+const Login = () => {
   return (
     <div className="h-screen w-screen flex items-center justify-center">
       <motion.div
@@ -13,10 +13,10 @@ const Signup = () => {
           transition: { duration: 0.8 },
         }}
       >
-        <SignupForm />
+        <LoginForm />
       </motion.div>
     </div>
   );
 };
 
-export default Signup;
+export default Login;
