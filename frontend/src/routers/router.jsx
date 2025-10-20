@@ -3,10 +3,9 @@ import App from "../App.jsx";
 import Signup from "../pages/auth/Signup.jsx";
 import Survey from "../pages/auth/Survey.jsx";
 import Login from "../pages/auth/Login.jsx";
-import DashboardLayout from "../components/DashboardLayout.tsx";
-// import Dashboard from "../pages/Dashboard.jsx";
-// import Analytics from "../pages/Analytics.jsx";
-// import Settings from "../pages/Settings.jsx";
+import DashboardLayout from "../components/DashboardLayout.jsx";
+import Dashboard from "../pages/dashboard/Dashboard.jsx";
+import Courses from "../pages/dashboard/Courses.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,18 +28,30 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: <DashboardLayout />,
         children: [
-          // {
-          //   path: "/dashboard",
-          //   element: <Dashboard />,
-          // },
-          // {
-          //   path: "/analytics",
-          //   element: <Analytics />,
-          // },
-          // {
-          //   path: "/settings",
-          //   element: <Settings />,
-          // },
+          {
+            path: "/dashboard",
+            element: <Dashboard />,
+          },
+          {
+            path: "/dashboard/courses",
+            element: <Courses />,
+          },
+          {
+            path: "/dashboard/my-learning",
+            element: <div>My learning</div>,
+          },
+          {
+            path: "/dashboard/skill-paths",
+            element: <div>Skill Paths</div>,
+          },
+          {
+            path: "/dashboard/settings",
+            element: <div>Settings</div>,
+          },
+          {
+            path: "/dashboard/support",
+            element: <div>Support</div>,
+          },
         ],
       },
     ],

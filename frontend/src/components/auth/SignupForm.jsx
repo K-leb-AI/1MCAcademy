@@ -106,7 +106,7 @@ const SignupForm = () => {
           <input
             type="text"
             id="name"
-            className="mt-4 w-full px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30"
+            className="mt-4 w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
             onChange={(e) => setName(e.target.value)}
             value={name}
             placeholder="Full Name"
@@ -116,7 +116,7 @@ const SignupForm = () => {
           <input
             type="email"
             id="email"
-            className="w-full px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30"
+            className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             placeholder="Email"
@@ -133,7 +133,7 @@ const SignupForm = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30 after"
+              className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
               onChange={(e) => handleChange(e)}
               value={password}
               placeholder="Password"
@@ -170,9 +170,13 @@ const SignupForm = () => {
         <div className="relative w-full mb-4" ref={dropdownRef}>
           <div
             onClick={() => setIsOpen(!isOpen)}
-            className="w-full px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30 transition flex items-center justify-between"
+            className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
           >
-            <span className={selectedRegion ? "text-black" : "text-black-1/30"}>
+            <span
+              className={
+                selectedRegion ? "text-foreground" : "text-foreground/30"
+              }
+            >
               {selectedRegion || "Select your region"}
             </span>
             <MdOutlineKeyboardArrowDown
@@ -206,13 +210,13 @@ const SignupForm = () => {
           )}
         </div>
         <button
-          className="w-full h-10 bg-accent rounded-lg text-white text-sm hover:bg-light-accent duration-300 cursor-pointer grid place-content-center"
+          className="w-full h-10 bg-primary rounded-lg text-primary-foreground text-sm hover:bg-light-accent duration-300 cursor-pointer grid place-content-center"
           type="submit"
         >
           {loading ? "Loading..." : "Continue"}
         </button>
       </form>
-      <div className="flex gap-1 mt-3">
+      <div className="flex gap-1 mt-3 text-sm">
         <span>Already have an account?</span>
         <span className="underline font-bold">
           <Link to={"/auth/login"}>Login</Link>
@@ -224,7 +228,7 @@ const SignupForm = () => {
         <div className="border w-9/20 border-gray/10 rounded-full"></div>
       </div>
       <button
-        className="flex items-center gap-2 justify-center w-full h-10 bg-white-0 shadow-sm rounded-lg text-black font-medium mt-3 text-xs hover:bg-white-1 duration-300 cursor-pointer"
+        className="flex items-center gap-2 justify-center w-full h-10 bg-card shadow-sm rounded-lg text-foreground font-medium mt-3 text-xs hover:bg-card/80 duration-300 cursor-pointer"
         onClick={signInWithGoogle}
       >
         <FcGoogle className="size-4" />

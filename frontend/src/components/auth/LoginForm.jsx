@@ -51,7 +51,7 @@ const LoginForm = () => {
           <input
             type="email"
             id="email"
-            className="w-full mt-4 px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30"
+            className="mt-4 w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             placeholder="Email"
@@ -62,7 +62,7 @@ const LoginForm = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full px-4 py-3 bg-white border-1 border-gray/30 rounded-lg text-left focus:outline-none placeholder:text-black-1/30 after"
+              className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               placeholder="Password"
@@ -76,13 +76,13 @@ const LoginForm = () => {
           </div>
         </div>
         <button
-          className="w-full h-10 bg-accent rounded-lg text-white text-sm hover:bg-light-accent duration-300 cursor-pointer grid place-content-center"
+          className="w-full h-10 bg-primary rounded-lg text-primary-foreground text-sm hover:bg-light-accent duration-300 cursor-pointer grid place-content-center"
           type="submit"
         >
           {loading ? "Loading..." : "Login"}
         </button>
       </form>
-      <div className="flex gap-1 mt-3">
+      <div className="flex gap-1 mt-3 text-sm">
         <span>Don't have an account?</span>
         <span className="underline font-bold">
           <Link to={"/auth/signup"}>Sign up</Link>
@@ -94,7 +94,7 @@ const LoginForm = () => {
         <div className="border w-9/20 border-gray/10 rounded-full"></div>
       </div>
       <button
-        className="flex items-center gap-2 justify-center w-full h-10 bg-white-0 shadow-sm rounded-lg text-black font-medium mt-3 text-xs hover:bg-white-1 duration-300 cursor-pointer"
+        className="flex items-center gap-2 justify-center w-full h-10 bg-card shadow-sm rounded-lg text-foreground font-medium mt-3 text-xs hover:bg-card/80 duration-300 cursor-pointer"
         onClick={signInWithGoogle}
       >
         <FcGoogle className="size-4" />
