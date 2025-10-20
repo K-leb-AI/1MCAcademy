@@ -48,7 +48,7 @@ const Dashboard = () => {
                 <p className="font-bold text-foreground text-2xl">
                   Web Development
                 </p>
-                <p className="px-3 bg-primary/10 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center">
+                <p className="px-3 bg-primary/5 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center">
                   Beginner
                 </p>
               </div>
