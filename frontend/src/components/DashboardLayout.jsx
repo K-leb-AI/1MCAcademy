@@ -71,7 +71,7 @@ export default function Page() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          <div className="p-5">
+          <div className="px-10 pb-10">
             <Outlet />
           </div>
         </SidebarInset>

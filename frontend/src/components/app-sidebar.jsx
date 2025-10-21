@@ -2,24 +2,13 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  SquareTerminal,
   CodeXml,
-  CircleQuestionMark,
-  Handshake,
   LayoutDashboard,
   BookMarked,
   PenTool,
   Waypoints,
   Settings2,
-  Headset,
+  MessageCircle,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -75,9 +64,9 @@ const data = {
       icon: Settings2,
     },
     {
-      title: "Help/Support",
-      url: "/dashboard/support",
-      icon: Headset,
+      title: "Notifications",
+      url: "/dashboard/notifications",
+      icon: MessageCircle,
     },
   ],
 };

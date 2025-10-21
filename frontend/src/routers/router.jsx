@@ -7,6 +7,9 @@ import MyLearning from "../pages/dashboard/MyLearning.jsx";
 import DashboardLayout from "../components/DashboardLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Courses from "../pages/dashboard/Courses.jsx";
+import SkillPath from "../pages/dashboard/SkillPath.jsx";
+import SettingsPage from "../pages/dashboard/Settings.jsx";
+import Notifications from "../components/Notifications.jsx";
 
 const router = createBrowserRouter([
   {
@@ -43,15 +46,15 @@ const router = createBrowserRouter([
           },
           {
             path: "/dashboard/skill-paths",
-            element: <div>Skill Paths</div>,
+            element: <SkillPath />,
           },
           {
             path: "/dashboard/settings",
-            element: <div>Settings</div>,
+            element: <SettingsPage />,
           },
           {
-            path: "/dashboard/support",
-            element: <div>Support</div>,
+            path: "/dashboard/notifications",
+            element: <Notifications />,
           },
         ],
       },
