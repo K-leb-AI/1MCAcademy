@@ -63,7 +63,7 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <div className="flex flex-row gap-5 items-center mt-1">
+            <div className="flex flex-row gap-2 items-center mt-1">
               <div className="gap-2"></div>
               <RiProgress8Fill size={12} className="text-foreground/50" />
               <p className="text-foreground/50">Your Progress: </p>
@@ -93,7 +93,7 @@ const Dashboard = () => {
           <Calendar20 />
         </div>
         <div className="bg-sidebar col-span-1 lg:row-span-1 rounded-xl py-4 px-8">
-          <div className="text-foreground/50 mb-4">Trophies</div>
+          <div className="text-foreground/50 mb-4">Badges</div>
           <div className="w-full">
             <CarouselSpacing />
           </div>

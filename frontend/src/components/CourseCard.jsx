@@ -54,7 +54,8 @@ const CourseCard = ({ course }) => {
       <div>
         <img
           src={course.thumbnail}
-          className={`w-full aspect-3/2 rounded-xl object-cover`}
+          className={`aspect-3/2 rounded-xl object-cover w-500px`}
+          loading="lazy"
         />
         <div className=" flex gap-2 items-center mt-3 justify-between">
           <h3 className="text-lg font-semibold ">{course.title}</h3>

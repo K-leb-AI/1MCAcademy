@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import CourseCard from "../../components/CourseCard";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 const Courses = () => {
   const coursesData = [
@@ -118,7 +117,7 @@ const Courses = () => {
     },
 
     {
-      id: 14,
+      id: 6,
       title: "Publishing & Optimizing VR Experiences",
       topic: "VR Development",
       level: "Advanced",
@@ -141,7 +140,7 @@ const Courses = () => {
 
     // 💻 WEB DEVELOPMENT
     {
-      id: 6,
+      id: 7,
       title: "Intro to Web Development",
       topic: "Web Development",
       level: "Beginner",
@@ -163,7 +162,7 @@ const Courses = () => {
       isLocked: false,
     },
     {
-      id: 7,
+      id: 8,
       title: "Building Interactive Web Apps",
       topic: "Web Development",
       level: "Intermediate",
@@ -185,7 +184,7 @@ const Courses = () => {
       isLocked: true,
     },
     {
-      id: 16,
+      id: 9,
       title: "Responsive Design & Accessibility",
       topic: "Web Development",
       level: "Intermediate",
@@ -208,7 +207,7 @@ const Courses = () => {
 
     // 🐍 PYTHON PROGRAMMING
     {
-      id: 8,
+      id: 10,
       title: "Python Basics for Everyone",
       topic: "Python Programming",
       level: "Beginner",
@@ -230,7 +229,7 @@ const Courses = () => {
       isLocked: false,
     },
     {
-      id: 9,
+      id: 11,
       title: "Working with Data in Python",
       topic: "Python Programming",
       level: "Intermediate",
@@ -251,7 +250,7 @@ const Courses = () => {
       isLocked: true,
     },
     {
-      id: 17,
+      id: 12,
       title: "Building Real-World Python Projects",
       topic: "Python Programming",
       level: "Advanced",
@@ -275,7 +274,7 @@ const Courses = () => {
 
     // 🚀 ENTREPRENEURSHIP
     {
-      id: 10,
+      id: 13,
       title: "Idea to Action: Starting Your Venture",
       topic: "Entrepreneurship",
       level: "Beginner",
@@ -296,7 +295,7 @@ const Courses = () => {
       isLocked: false,
     },
     {
-      id: 11,
+      id: 14,
       title: "Building and Validating Your MVP",
       topic: "Entrepreneurship",
       level: "Intermediate",
@@ -317,7 +316,7 @@ const Courses = () => {
       isLocked: true,
     },
     {
-      id: 18,
+      id: 15,
       title: "Scaling and Growth Strategies",
       topic: "Entrepreneurship",
       level: "Advanced",
@@ -340,7 +339,7 @@ const Courses = () => {
 
     // 🛸 DRONE PILOTING
     {
-      id: 12,
+      id: 16,
       title: "Basics of Drone Operation & Safety",
       topic: "Drone Piloting",
       level: "Beginner",
@@ -362,7 +361,7 @@ const Courses = () => {
       isLocked: false,
     },
     {
-      id: 13,
+      id: 17,
       title: "Aerial Photography & Mapping",
       topic: "Drone Piloting",
       level: "Intermediate",
@@ -382,7 +381,7 @@ const Courses = () => {
       isLocked: true,
     },
     {
-      id: 19,
+      id: 18,
       title: "Drone Applications in Industry",
       topic: "Drone Piloting",
       level: "Advanced",
@@ -405,18 +404,47 @@ const Courses = () => {
     },
   ];
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredSearch, setFilteredSearch] = useState(coursesData);
+
+  const handleChange = (value) => {
+    setSearchTerm(value);
+    setFilteredSearch(
+      coursesData.filter(
+        (course) =>
+          course.title.toLowerCase().includes(value.toLowerCase()) ||
+          course.topic.toLowerCase().includes(value.toLowerCase()) ||
+          course.description.toLowerCase().includes(value.toLowerCase()) ||
+          course.detailedDescription.toLowerCase().includes(value.toLowerCase())
+      )
+    );
+  };
+
   return (
     <div>
-      <div className="flex w-full max-w-sm items-center gap-2">
-        <Input type="text" placeholder="Search a course" />
-        <Button type="submit" variant="default" className="cursor-pointer">
-          <Search size={15} />
-          Search
-        </Button>
+      <div className="flex w-full max-w-xl items-center gap-2 relative">
+        <Input
+          type="text"
+          placeholder="Search a course area, or instructor"
+          onChange={(e) => handleChange(e.target.value)}
+          value={searchTerm}
+          className="py-6 pl-10 rounded-xl"
+        />
+        <Search
+          size={15}
+          className="absolute top-4 left-3 text-foreground/30"
+        />
       </div>
 
-      <div className="mt-8 grid lg:grid-cols-3 gap-5">
-        {coursesData.map((course) => (
+      <div className="my-4 lg:mt-8 lg:mb-5 items-center flex">
+        <span className="font-bold text-2xl">All Courses</span>
+        <span className="text-foreground/50 ml-3">
+          ({filteredSearch.length} result{filteredSearch.length > 1 ? "s" : ""})
+        </span>
+      </div>
+
+      <div className="mt-4 grid  sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {filteredSearch.map((course) => (
           <CourseCard course={course} />
         ))}
       </div>

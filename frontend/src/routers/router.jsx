@@ -3,6 +3,7 @@ import App from "../App.jsx";
 import Signup from "../pages/auth/Signup.jsx";
 import Survey from "../pages/auth/Survey.jsx";
 import Login from "../pages/auth/Login.jsx";
+import MyLearning from "../pages/dashboard/MyLearning.jsx";
 import DashboardLayout from "../components/DashboardLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Courses from "../pages/dashboard/Courses.jsx";
@@ -38,7 +39,7 @@ const router = createBrowserRouter([
           },
           {
             path: "/dashboard/my-learning",
-            element: <div>My learning</div>,
+            element: <MyLearning />,
           },
           {
             path: "/dashboard/skill-paths",
