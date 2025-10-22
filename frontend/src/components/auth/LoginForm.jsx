@@ -89,17 +89,17 @@ const LoginForm = () => {
         </span>
       </div>
       <div className="flex w-full gap-2 items-center mt-5">
-        <div className="border w-9/20 border-gray/10 rounded-full"></div>
+        {/* <div className="border w-9/20 border-gray/10 rounded-full"></div>
         OR
-        <div className="border w-9/20 border-gray/10 rounded-full"></div>
+        <div className="border w-9/20 border-gray/10 rounded-full"></div> */}
       </div>
-      <button
+      {/* <button
         className="flex items-center gap-2 justify-center w-full h-10 bg-card shadow-sm rounded-lg text-foreground font-medium mt-3 text-xs hover:bg-card/80 duration-300 cursor-pointer"
         onClick={signInWithGoogle}
       >
         <FcGoogle className="size-4" />
         Sign in with Google
-      </button>
+      </button> */}
     </div>
   );
 };

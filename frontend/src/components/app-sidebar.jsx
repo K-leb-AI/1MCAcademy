@@ -31,7 +31,7 @@ const data = {
   },
   teams: [
     {
-      name: "1 Million Coders Academy",
+      name: "Nunya",
       logo: CodeXml,
       plan: "Learners' Arena",
     },
