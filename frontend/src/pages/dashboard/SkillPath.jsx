@@ -219,7 +219,7 @@ const SkillPath = () => {
   ];
 
   return (
-    <div className="">
+    <div className="mb-5 px-10">
       {/* --- Page Heading --- */}
       <h1 className="text-2xl font-bold mt-6 mb-2">Skill Paths</h1>
       <p className="text-foreground/70 mb-8">
@@ -233,10 +233,10 @@ const SkillPath = () => {
         {skillPaths.map((path) => (
           <div
             key={path.id}
-            className="bg-sidebar rounded-xl p-6 hover:scale-[1.01] duration-300 shadow-sm"
+            className="bg-sidebar rounded-xl p-3 hover:scale-[1.01] duration-300 shadow-sm"
           >
             <div
-              className="w-full h-40 rounded-lg bg-cover bg-center mb-4"
+              className="w-full h-50 rounded-lg bg-cover bg-center mb-4"
               style={{ backgroundImage: `url(${path.image})` }}
             ></div>
 

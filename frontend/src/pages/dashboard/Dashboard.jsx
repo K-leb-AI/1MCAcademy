@@ -9,9 +9,10 @@ import { CarouselSpacing } from "../../components/Carousel";
 
 const Dashboard = () => {
   return (
-    <>
+    <div className="mb-5 px-10">
       <div className="lg:flex items-center justify-between">
-        <div className="mt-4 lg:mb-8 mb-2 font-bold text-2xl">
+        <div className="mt-4 lg:mb-8 mb-2 font-bold text-2xl flex gap-2 items-center">
+          <div className="w-8 aspect-square rounded-full bg-accent"></div>
           Welcome back, Caleb!
         </div>
         <div className="flex items-center mt-4 mb-8 gap-3">
@@ -103,7 +104,7 @@ const Dashboard = () => {
           <ChartAreaDefault />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

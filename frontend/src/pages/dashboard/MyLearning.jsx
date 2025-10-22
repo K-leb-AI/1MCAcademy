@@ -238,7 +238,7 @@ const MyLearning = () => {
     },
   ];
   return (
-    <div>
+    <div className="mb-5 px-10">
       {/* <div className="flex flex-col gap-6"> */}
       <div className="flex items-center justify-between my-6">
         <div className="font-bold text-2xl">My Learning Journey</div>

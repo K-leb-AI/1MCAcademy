@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { User, Bell, HelpCircle } from "lucide-react";
+import { User, Bell, HelpCircle, Lock } from "lucide-react";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("Profile");
@@ -19,19 +19,35 @@ export default function SettingsPage() {
             <h3 className="text-lg font-semibold mb-2">Profile Settings</h3>
             <div>
               <label className="text-sm text-foreground/60">Full Name</label>
-              <input
-                type="text"
-                className="w-full p-2 bg-accent rounded-md"
-                placeholder="Enter your name"
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  className="w-full py-2 bg-accent rounded-md px-8"
+                  placeholder="Enter your name"
+                  disabled
+                  value="John Doe"
+                />
+                <Lock
+                  className="absolute top-2.5 left-2 text-foreground/50"
+                  size={12}
+                />
+              </div>
             </div>
             <div>
               <label className="text-sm text-foreground/60">Email</label>
-              <input
-                type="email"
-                className="w-full p-2 bg-accent rounded-md"
-                placeholder="Enter your email"
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  className="w-full py-2 bg-accent rounded-md px-8"
+                  placeholder="Enter your email"
+                  disabled
+                  value="sample@gmail.com"
+                />
+                <Lock
+                  className="absolute top-2.5 left-2 text-foreground/50"
+                  size={12}
+                />
+              </div>
             </div>
             <div>
               <label className="text-sm text-foreground/60">Bio</label>
@@ -102,7 +118,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="rounded-xl h-[90vh]">
+    <div className="rounded-xl h-[90vh] mb-5 px-10">
       <h1 className="text-2xl font-bold mt-6 mb-5">Settings</h1>
 
       {/* Tabs */}

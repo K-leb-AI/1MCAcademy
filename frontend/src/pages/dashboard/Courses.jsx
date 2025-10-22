@@ -421,7 +421,7 @@ const Courses = () => {
   };
 
   return (
-    <div>
+    <div className="mb-5 px-10">
       <div className="flex w-full max-w-xl items-center gap-2 relative">
         <Input
           type="text"
