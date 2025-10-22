@@ -45,7 +45,7 @@ export default function Page() {
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <Breadcrumb>
+            <Breadcrumb className="z-10">
               <BreadcrumbList className="">
                 {segments.map((segment, index) => {
                   const path = "/" + segments.slice(0, index + 1).join("/");
@@ -71,7 +71,7 @@ export default function Page() {
               </BreadcrumbList>
             </Breadcrumb>
           </header>
-          <div className="px-10 pb-10">
+          <div className="">
             <Outlet />
           </div>
         </SidebarInset>

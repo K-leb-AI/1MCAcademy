@@ -9,7 +9,8 @@ import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Courses from "../pages/dashboard/Courses.jsx";
 import SkillPath from "../pages/dashboard/SkillPath.jsx";
 import SettingsPage from "../pages/dashboard/Settings.jsx";
-import Notifications from "../components/Notifications.jsx";
+import Notifications from "../pages/dashboard/Notifications.jsx";
+import NotificationMessage from "../components/NotificationMessage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,12 @@ const router = createBrowserRouter([
           {
             path: "/dashboard/notifications",
             element: <Notifications />,
+            children: [
+              {
+                path: "/dashboard/notifications/:messageId",
+                element: <NotificationMessage />,
+              },
+            ],
           },
         ],
       },
