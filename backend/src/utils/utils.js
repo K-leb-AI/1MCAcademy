@@ -8,3 +8,8 @@ export const hashData = async (data, salt = 10) => {
         throw error;
     }
 }
+
+// Token generation
+export const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET_KEY, {
+            expiresIn: "1h"
+        })
