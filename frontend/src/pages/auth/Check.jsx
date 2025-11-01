@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import RecommendationSurvey from "../../components/auth/SurveyForm";
+import React from "react";
+import { CheckEmail } from "../../components/auth/CheckEmail";
 import { motion } from "motion/react";
 
-const Survey = () => {
+const Check = () => {
   return (
     <div className="h-screen w-screen flex items-center justify-center">
       <motion.div
@@ -13,10 +13,10 @@ const Survey = () => {
           transition: { duration: 0.8 },
         }}
       >
-        <RecommendationSurvey />
+        <CheckEmail />
       </motion.div>
     </div>
   );
 };
 
-export default Survey;
+export default Check;
