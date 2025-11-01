@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppSidebar } from "./app-sidebar";
 import { ModeToggle } from "../components/ThemeToggle";
+import RecommendationSurvey from "./auth/SurveyForm";
+import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
+import { PiSpinner } from "react-icons/pi";
 
 import {
   Breadcrumb,
@@ -17,14 +21,56 @@ import { ChevronRight } from "lucide-react";
 
 export default function Page() {
   const location = useLocation();
+  const navigate = useNavigate();
   const segments = location.pathname.split("/").filter((seg) => seg);
   const formatSegment = (seg) => {
     const subseg = seg.split("-").join(" ");
     return subseg.charAt(0).toUpperCase() + subseg.slice(1);
   };
+  const [loggedUser, setLoggedUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const handleAuth = async () => {
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          console.log("Unauthenticated");
+          navigate("/");
+        }
+
+        if (error) {
+          console.log("Error in Dashboard auth: ", error);
+          return;
+        }
+        setLoggedUser(user);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    handleAuth();
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
+        <PiSpinner className="animate-spin" size={40} />
+        <p className="mt-4 text-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!loggedUser) {
+    return null;
+  }
 
   return (
-    <>
+    <div>
       <SidebarProvider
         defaultOpen={true}
         className=""
@@ -35,7 +81,6 @@ export default function Page() {
         <AppSidebar />
         <SidebarInset className="text-sm">
           <ModeToggle />
-
           <header className="flex h-16 shrink-0 items-center gap-2 px-4">
             <SidebarTrigger
               className="-ml-1 hover:bg-sidebar-accent"
@@ -76,6 +121,6 @@ export default function Page() {
           </div>
         </SidebarInset>
       </SidebarProvider>
-    </>
+    </div>
   );
 }

@@ -25,8 +25,19 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+import { supabase } from "../supabaseClient";
+import toast from "react-hot-toast";
+
 export function NavUser({ user }) {
   const { isMobile } = useSidebar();
+  const handleLogout = async () => {
+    try {
+      const { error } = supabase.auth.signOut();
+      toast.success("Successfully Logged out");
+    } catch (error) {
+      console.log("Error occured in logout: ", error);
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -89,7 +100,7 @@ export function NavUser({ user }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>

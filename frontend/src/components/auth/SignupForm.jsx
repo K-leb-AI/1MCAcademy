@@ -5,6 +5,7 @@ import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../supabaseClient";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -42,9 +43,30 @@ const SignupForm = () => {
     }
     try {
       //make api call here
-      // toast.success("Account created! Please check your email for verification.");
-      //routing logic
-      navigate("/auth/survey");
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/survey`,
+          data: {
+            display_name: name,
+          },
+        },
+      });
+
+      localStorage.setItem("region", JSON.stringify(selectedRegion));
+
+      if (error) {
+        console.log("Error in handleSignUp: ", error.message);
+        toast.error(error.message || "Signup failed. Please try again.");
+        setLoading(false);
+        return;
+      } else {
+        toast.success(
+          "Account created! Please check your email for verification."
+        );
+        navigate("/auth/check");
+      }
     } catch (error) {
       console.log("Error in handleSignUp: ", error.message);
       toast.error(error.message || "Signup failed. Please try again.");
@@ -189,16 +211,16 @@ const SignupForm = () => {
 
           {/* Dropdown Menu */}
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 md:top-0 md:left-[105%] md:w-4/5 mt-2 bg-white rounded-xl shadow-lg z-10">
+            <div className="absolute top-full left-0 right-0 md:-top-18 md:left-[105%] md:w-3/5 mt-2 bg-sidebar rounded-xl shadow-lg z-10">
               <ul className="py-2">
                 {regions.map((region) => (
                   <li key={region}>
                     <button
                       onClick={() => handleSelectRegion(region)}
-                      className={`w-full px-6 py-1 text-left transition text-sm ${
+                      className={`w-full px-6 py-1 text-left transition text-xs ${
                         selectedRegion === region
-                          ? "bg-white-1 bg-opacity-20"
-                          : "text-gray hover:bg-gray-100"
+                          ? "bg-accent bg-opacity-20"
+                          : "text-foreground/50 hover:bg-accent/40"
                       }`}
                     >
                       {region}

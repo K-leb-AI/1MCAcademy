@@ -6,11 +6,11 @@ function App() {
   return (
     <>
       <ModeToggle />
-
       <Toaster />
       <main>
         <Outlet />
       </main>
+      {/* <div className="">Landing Page</div> */}
     </>
   );
 }

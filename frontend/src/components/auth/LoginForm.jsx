@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { FcGoogle } from "react-icons/fc";
 import toast from "react-hot-toast";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../supabaseClient";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -14,15 +13,23 @@ const LoginForm = () => {
 
   const navigate = useNavigate();
 
-  const handleSignUp = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      //make api call here
-      // toast.success("Account created! Please check your email for verification.");
-      //routing logic
-      navigate("/auth/survey");
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (user) {
+        toast.success("Successful Login.");
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.log("Error in handleSignUp: ", error.message);
       toast.error(error.message || "Signup failed. Please try again.");
@@ -42,7 +49,7 @@ const LoginForm = () => {
       <form
         action=""
         className="flex justify-center items-center flex-col w-full"
-        onSubmit={(e) => handleSignUp(e)}
+        onSubmit={(e) => handleLogin(e)}
       >
         <h1 className="text-2xl font-bold">Welcome Back</h1>
         <p className="text-gray mb-2 font-light">Back to the grind.</p>
@@ -51,7 +58,7 @@ const LoginForm = () => {
           <input
             type="email"
             id="email"
-            className="mt-4 w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
+            className="mt-4 w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             placeholder="Email"
