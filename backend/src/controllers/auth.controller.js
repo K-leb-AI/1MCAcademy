@@ -1,16 +1,13 @@
 import User from "../models/user.model.js";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import {
-    hashData,token
-} from "../utils/utils.js";
+import { generateToken } from "../utils/utils.js";
 
 export async function signup(req, res) {
     try {
-        let { name,email, password } = req.body;
-        name = name.trim();
-        email = email.trim().toLowerCase();
-        password = password.trim();
+        let { name, email, password } = req.body;
+        name = name ? name.trim() : "";
+        email = email ? email.trim().toLowerCase() : "";
+        password = password ? password.trim() : "";
         // validate input
         if (!(name && email && password)) {
             return res.status(400).json(({ message: "All fields are required" }))
@@ -33,25 +30,26 @@ export async function signup(req, res) {
         if (existingUser) {
             return res.status(400).json({ message: "Email already exists, kindly use another" })
         }
-        // Hash password
-        const hashedPassword = await hashData(password);
-
-        // token generation & cookie creation
-        res.cookie("jwt", token, {
-            maxAge: 60 * 60 * 1000,
-            httpOnly: true, // prevent xss attacks
-            sameSite: "strict",//prevent CSRF attacks
-            secure: process.env.NODE_ENV === "production"
-        })
-        // Create user
+        // Create user (password will be hashed by pre-save hook in model)
         const newUser = new User({
-            name,
+            fullName: name,
             email,
-            password: hashedPassword
-        })
+            password
+        });
+
         // Save user to DB
         const savedUser = await newUser.save();
-        res.status(201).json({ message: "User registered successfully" });  
+
+        // token generation & cookie creation (signed with user id)
+        const jwtToken = generateToken({ userId: savedUser._id });
+        res.cookie("jwt", jwtToken, {
+            maxAge: 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production"
+        });
+
+        res.status(201).json({ message: "User registered successfully", user: { id: savedUser._id, fullName: savedUser.fullName, email: savedUser.email } });
         return savedUser;
 
     } catch (error) {
@@ -69,21 +67,27 @@ export async function login(req, res) {
             return res.status(400).json({ message: "All fields are required" })
         }
 
-        const user = await User.findOne({ email })
+    const user = await User.findOne({ email })
         if (!user) return res.status(401).json({ message: "Invalid email or password " })
 
         const isPasswordCorrect = await user.matchPassword(password)
         if (!isPasswordCorrect) return res.status(401).json({ message: "Invalid email or password" })
 
         
-        res.cookie("jwt", token, {
+        // generate token and set cookie
+        const jwtToken = generateToken({ userId: user._id });
+        res.cookie("jwt", jwtToken, {
             maxAge: 60 * 60 * 1000,
-            httpOnly: true, // prevent xss attacks
-            sameSite: "strict",//prevent CSRF attacks
+            httpOnly: true,
+            sameSite: "strict",
             secure: process.env.NODE_ENV === "production"
-        })
+        });
 
-        res.status(200).json({ success: true, user })
+        // remove password before sending
+        const userSafe = user.toObject();
+        delete userSafe.password;
+
+        res.status(200).json({ success: true, user: userSafe })
 
     } catch (error) {
         console.log("Error in login controller", error)

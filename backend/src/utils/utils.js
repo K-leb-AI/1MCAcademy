@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const hashData = async (data, salt = 10) => {
     try {
@@ -7,9 +8,15 @@ export const hashData = async (data, salt = 10) => {
     } catch (error) {
         throw error;
     }
-}
+};
 
-// Token generation
-export const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET_KEY, {
-            expiresIn: "1h"
-        })
+export const generateToken = (payload) => {
+    return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+        expiresIn: "1h",
+    });
+};
+
+export default {
+    hashData,
+    generateToken,
+};
