@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { FcGoogle } from "react-icons/fc";
 import toast from "react-hot-toast";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { MdArrowBack } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -116,6 +117,16 @@ const SignupForm = () => {
 
   return (
     <div className="flex items-center flex-col w-[300px]">
+      <div className="self-start mb-3">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800"
+          aria-label="Go back"
+        >
+          <MdArrowBack size={18} /> Back
+        </button>
+      </div>
       <form
         action=""
         className="flex justify-center items-center flex-col w-full"

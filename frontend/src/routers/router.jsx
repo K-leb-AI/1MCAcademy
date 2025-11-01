@@ -12,12 +12,16 @@ import Notifications from "../pages/dashboard/Notifications.jsx";
 import NotificationMessage from "../components/NotificationMessage.jsx";
 import Check from "../pages/auth/Check.jsx";
 import Survey from "../pages/auth/Survey.jsx";
-
+import LandingPage from "../pages/LandingPage.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "/",
+        element: <LandingPage />,
+      },
       {
         path: "/auth/signup",
         element: <Signup />,

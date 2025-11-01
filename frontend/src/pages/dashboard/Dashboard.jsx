@@ -79,7 +79,7 @@ const Dashboard = () => {
               Current Skill Path
             </span>
             <span className="text-xs text-foreground/50 capitalize">
-              {userProfile.skill_path} . {userProfile.experience}
+              {/* {userProfile.skill_path} . {userProfile.experience} */}
             </span>
           </div>
         </div>
@@ -98,10 +98,10 @@ const Dashboard = () => {
             <div className="">
               <div className="flex gap-4 items-center-justify-center">
                 <p className="font-bold text-foreground text-2xl capitalize">
-                  {userProfile.skill_path}
+                  {userProfile}
                 </p>
                 <p className="px-3 bg-primary/5 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center">
-                  {userProfile.experience}
+                  {userProfile}
                 </p>
               </div>
               <div className="text-foreground/50 mt-1 flex gap-2">
