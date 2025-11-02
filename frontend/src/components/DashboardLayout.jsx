@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { AppSidebar } from "./app-sidebar";
 import { ModeToggle } from "../components/ThemeToggle";
-import RecommendationSurvey from "./auth/SurveyForm";
 import { supabase } from "../supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet, useLocation, Link } from "react-router-dom";
 import { PiSpinner } from "react-icons/pi";
-
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,8 +13,6 @@ import {
 } from "./ui/breadcrumb";
 import { Separator } from "./ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "./ui/sidebar";
-import { Outlet, useLocation } from "react-router-dom";
-
 import { ChevronRight } from "lucide-react";
 
 export default function Page() {
@@ -47,6 +43,7 @@ export default function Page() {
           console.log("Error in Dashboard auth: ", error);
           return;
         }
+
         setLoggedUser(user);
       } finally {
         setIsLoading(false);
@@ -54,7 +51,7 @@ export default function Page() {
     };
 
     handleAuth();
-  });
+  }, []); // ✅ add dependency array
 
   if (isLoading) {
     return (
@@ -70,57 +67,44 @@ export default function Page() {
   }
 
   return (
-    <div>
-      <SidebarProvider
-        defaultOpen={true}
-        className=""
-        style={{
-          "--sidebar-width": "19rem",
-        }}
-      >
-        <AppSidebar />
-        <SidebarInset className="text-sm">
-          <ModeToggle />
-          <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-            <SidebarTrigger
-              className="-ml-1 hover:bg-sidebar-accent"
-              onClick={() => {}}
-            />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb className="z-10">
-              <BreadcrumbList className="">
-                {segments.map((segment, index) => {
-                  const path = "/" + segments.slice(0, index + 1).join("/");
-                  const isLast = index == segments.length - 1;
+    <SidebarProvider defaultOpen={true} style={{ "--sidebar-width": "19rem" }}>
+      <AppSidebar />
+      <SidebarInset className="text-sm">
+        <ModeToggle />
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1 hover:bg-sidebar-accent" />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <Breadcrumb className="z-10">
+            <BreadcrumbList>
+              {segments.map((segment, index) => {
+                const path = "/" + segments.slice(0, index + 1).join("/");
+                const isLast = index === segments.length - 1;
 
-                  return (
-                    <BreadcrumbItem className="hidden md:block" key={index}>
-                      {!isLast ? (
-                        <div className="flex items-center gap-1">
-                          <BreadcrumbLink href={path} className="" asChild="">
-                            {formatSegment(segment)}
-                          </BreadcrumbLink>
-                          <ChevronRight className="hidden md:block" size={14} />
-                        </div>
-                      ) : (
-                        <BreadcrumbPage className="">
-                          {formatSegment(segment)}
-                        </BreadcrumbPage>
-                      )}
-                    </BreadcrumbItem>
-                  );
-                })}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </header>
-          <div className="">
-            <Outlet />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </div>
+                return (
+                  <BreadcrumbItem className="hidden md:block" key={index}>
+                    {!isLast ? (
+                      <div className="flex items-center gap-1">
+                        <BreadcrumbLink asChild>
+                          <Link to={path}>{formatSegment(segment)}</Link>
+                        </BreadcrumbLink>
+                        <ChevronRight className="hidden md:block" size={14} />
+                      </div>
+                    ) : (
+                      <BreadcrumbPage>{formatSegment(segment)}</BreadcrumbPage>
+                    )}
+                  </BreadcrumbItem>
+                );
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
+        <div>
+          <Outlet />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

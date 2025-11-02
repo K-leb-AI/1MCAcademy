@@ -419,9 +419,14 @@ function SidebarMenu({ className, ...props }) {
 }
 
 function SidebarMenuItem({ className, ...props }) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
   const navigate = useNavigate();
   const handleRoute = () => {
     navigate(props.item.url);
+    if (isMobile) {
+      setOpenMobile(false);
+    }
   };
   return (
     <li

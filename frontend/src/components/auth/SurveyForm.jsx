@@ -122,14 +122,16 @@ function getRecommendations(experienceLevel, interest, goal) {
 
   if (interest === "design") {
     recommended = recommended.filter((c) =>
-      ["3d", "vr-dev"].includes(c.skill_path)
+      ["3d modeling and printing", "virtual reality development"].includes(
+        c.skill_path
+      )
     );
   } else if (interest === "software") {
     recommended = recommended.filter((c) =>
-      ["web-dev", "python"].includes(c.skill_path)
+      ["web development", "python programming"].includes(c.skill_path)
     );
   } else if (interest === "hardware") {
-    recommended = recommended.filter((c) => c.skill_path === "drone");
+    recommended = recommended.filter((c) => c.skill_path === "drone piloting");
   } else if (interest === "business") {
     recommended = recommended.filter(
       (c) => c.skill_path === "entrepreneurship"
@@ -207,7 +209,7 @@ export default function RecommendationSurvey() {
       .from("profile")
       .insert({
         experience: recommendation.level,
-        skill_path: recommendation.name,
+        skill_path: recommendation.skill_path,
         user_id: loggedUser.id,
         region,
       })
@@ -216,10 +218,10 @@ export default function RecommendationSurvey() {
     console.log(data);
 
     if (error) {
-      console.error("Profile insert error:", error);
+      console.error("Profile insert error:", error.message);
       return;
     } else {
-      navigate("/dashboard");
+      navigate(`${window.location.origin}/dashboard`);
       toast(`Welcome, ${loggedUser.user_metadata.display_name}`);
     }
   };
@@ -232,6 +234,8 @@ export default function RecommendationSurvey() {
     } else if (step === 2 && goal) {
       const recs = getRecommendations(experience, interest, goal);
       setRecommendations(recs);
+      console.log(recs);
+
       setStep(3);
     }
   };
@@ -309,7 +313,7 @@ export default function RecommendationSurvey() {
                       <button
                         key={opt.value}
                         onClick={() => setExperience(opt.value)}
-                        className={`w-full p-4 border-1 rounded-lg text-left transition-all cursor-pointer ${
+                        className={`w-full p-4 border rounded-lg text-left transition-all cursor-pointer ${
                           experience === opt.value
                             ? "border-primary bg-primary/5"
                             : "border-gray/30 hover:border-primary/60"
@@ -342,7 +346,7 @@ export default function RecommendationSurvey() {
                       <button
                         key={opt.value}
                         onClick={() => setInterest(opt.value)}
-                        className={`w-full p-4 border-1 rounded-lg text-left transition-all ${
+                        className={`w-full p-4 border rounded-lg text-left transition-all ${
                           interest === opt.value
                             ? "border-primary bg-primary/5"
                             : "border-gray/30 hover:border-primary/60"
@@ -379,7 +383,7 @@ export default function RecommendationSurvey() {
                       <button
                         key={opt.value}
                         onClick={() => setGoal(opt.value)}
-                        className={`w-full p-4 border-1 rounded-lg text-left transition-all ${
+                        className={`w-full p-4 border rounded-lg text-left transition-all ${
                           goal === opt.value
                             ? "border-primary bg-primary/5"
                             : "border-gray/30 hover:border-primary/60"

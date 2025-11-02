@@ -26,7 +26,12 @@ const LoginForm = () => {
         password,
       });
 
-      if (user) {
+      if (error) {
+        console.log("Error in handleLogin: ", error.message);
+        toast.error(error.message || "Login failed. Please try again.");
+        setLoading(false);
+        return;
+      } else {
         toast.success("Successful Login.");
         navigate("/dashboard");
       }
@@ -69,7 +74,7 @@ const LoginForm = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
+              className="w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               placeholder="Password"

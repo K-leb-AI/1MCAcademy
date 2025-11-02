@@ -43,7 +43,7 @@ const SignupForm = () => {
     }
     try {
       //make api call here
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -62,16 +62,11 @@ const SignupForm = () => {
         setLoading(false);
         return;
       } else {
-        toast.success(
-          "Account created! Please check your email for verification."
-        );
+        toast("Please check your email for a verification link.");
         navigate("/auth/check");
       }
-    } catch (error) {
-      console.log("Error in handleSignUp: ", error.message);
-      toast.error(error.message || "Signup failed. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
   };
 
@@ -95,6 +90,7 @@ const SignupForm = () => {
     "Savannah Region",
     "Upper East Region",
     "Upper West Region",
+    "Volta Region",
     "Western Region",
     "Western North Region",
   ];
@@ -128,7 +124,7 @@ const SignupForm = () => {
           <input
             type="text"
             id="name"
-            className="mt-4 w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
+            className="mt-4 w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
             onChange={(e) => setName(e.target.value)}
             value={name}
             placeholder="Full Name"
@@ -138,7 +134,7 @@ const SignupForm = () => {
           <input
             type="email"
             id="email"
-            className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
+            className="w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             placeholder="Email"
@@ -155,7 +151,7 @@ const SignupForm = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
+              className="w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
               onChange={(e) => handleChange(e)}
               value={password}
               placeholder="Password"
@@ -192,7 +188,7 @@ const SignupForm = () => {
         <div className="relative w-full mb-4" ref={dropdownRef}>
           <div
             onClick={() => setIsOpen(!isOpen)}
-            className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
+            className="w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
           >
             <span
               className={
@@ -211,7 +207,7 @@ const SignupForm = () => {
 
           {/* Dropdown Menu */}
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 md:-top-18 md:left-[105%] md:w-3/5 mt-2 bg-sidebar rounded-xl shadow-lg z-10">
+            <div className="absolute top-full left-0 right-0 md:-top-30 md:left-[105%] md:w-3/5 mt-2 bg-sidebar rounded-xl shadow-lg z-10">
               <ul className="py-2">
                 {regions.map((region) => (
                   <li key={region}>

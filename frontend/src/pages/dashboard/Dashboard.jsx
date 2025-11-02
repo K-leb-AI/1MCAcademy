@@ -10,9 +10,9 @@ import { supabase } from "../../supabaseClient";
 import { PiSpinner } from "react-icons/pi";
 
 const Dashboard = () => {
-  const [loggedUser, setLoggedUser] = useState();
-  const [userProfile, setUserProfile] = useState();
-  // const [isLoading, setIsLoading] = useState(true);
+  const [loggedUser, setLoggedUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -21,37 +21,32 @@ const Dashboard = () => {
           data: { user },
           error,
         } = await supabase.auth.getUser();
-
         if (error) {
           console.log("Error in dashboard page auth: ", error);
-        }
-        setLoggedUser(user);
-      } catch (error) {
-        console.log("Error in Dashboard page: ", error.message);
-      }
-    };
-    const handleProfileFetch = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("profile")
-          .select("*")
-          .eq("user_id", loggedUser.id);
+        } else {
+          setLoggedUser(user);
+          // Fetch profile after user is known
+          const { data, error: profileError } = await supabase
+            .from("profile")
+            .select("*")
+            .eq("user_id", user?.id);
 
-        setUserProfile(data[0]);
-
-        if (error) {
-          console.log("Error in dashboard page profile fetch: ", error);
+          if (profileError) {
+            console.log("Error fetching profile:", profileError);
+          } else {
+            console.log(data[0]);
+            setUserProfile(data[0]);
+          }
         }
-      } catch (error) {
-        console.log("Error in Dashboard page: ", error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     handleAuth();
-    handleProfileFetch();
-  });
+  }, []);
 
-  if (!loggedUser) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
         <PiSpinner className="animate-spin" size={40} />
@@ -59,12 +54,16 @@ const Dashboard = () => {
       </div>
     );
   }
+
+  if (!userProfile && !loggedUser) {
+    return null;
+  }
   return (
-    <div className="mb-5 px-10">
+    <div className="mb-5 px-4 md:px-10">
       <div className="lg:flex items-center justify-between">
         <div className="mt-4 lg:mb-8 mb-2 font-bold text-2xl flex gap-2 items-center">
           <div className="w-8 aspect-square rounded-full bg-accent"></div>
-          Welcome back, {loggedUser.user_metadata.display_name}
+          Welcome back, {loggedUser.user_metadata.display_name.split(" ")[0]}
         </div>
         <div className="flex items-center mt-4 mb-8 gap-3">
           <div className="bg-accent text-foreground/50 flex h-8 items-center justify-center rounded-lg p-2 gap-1">
