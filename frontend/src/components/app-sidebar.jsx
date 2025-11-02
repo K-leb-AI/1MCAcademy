@@ -21,6 +21,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { supabase } from "../supabaseClient";
 
 // This is sample data.
 const data = {

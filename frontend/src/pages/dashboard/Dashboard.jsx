@@ -25,7 +25,6 @@ const Dashboard = () => {
           console.log("Error in dashboard page auth: ", error);
         } else {
           setLoggedUser(user);
-          // Fetch profile after user is known
           const { data, error: profileError } = await supabase
             .from("profile")
             .select("*")

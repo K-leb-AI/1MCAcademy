@@ -219,7 +219,7 @@ const SkillPath = () => {
   ];
 
   return (
-    <div className="mb-5 px-10">
+    <div className="mb-5 px-4 md:px-10">
       {/* --- Page Heading --- */}
       <h1 className="text-2xl font-bold mt-6 mb-2">Skill Paths</h1>
       <p className="text-foreground/70 mb-8">

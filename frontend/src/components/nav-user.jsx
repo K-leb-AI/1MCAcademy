@@ -27,13 +27,16 @@ import {
 
 import { supabase } from "../supabaseClient";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export function NavUser({ user }) {
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
   const handleLogout = async () => {
     try {
       const { error } = supabase.auth.signOut();
       toast.success("Successfully Logged out");
+      navigate("/");
     } catch (error) {
       console.log("Error occured in logout: ", error);
     }
