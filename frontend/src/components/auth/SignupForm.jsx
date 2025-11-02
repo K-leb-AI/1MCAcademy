@@ -24,6 +24,7 @@ const SignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  const redirectTo = import.meta.env.VITE_SITE_URL;
 
   //check password
   const handleChange = (e) => {
@@ -48,7 +49,7 @@ const SignupForm = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/survey`,
+          emailRedirectTo: `${redirectTo}/auth/survey`,
           data: {
             display_name: name,
           },

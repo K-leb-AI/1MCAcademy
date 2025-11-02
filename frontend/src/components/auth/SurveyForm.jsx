@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { CiRedo } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { supabase } from "../../supabaseClient";
 import toast from "react-hot-toast";
@@ -199,6 +199,7 @@ export default function RecommendationSurvey() {
   const [interest, setInterest] = useState(null);
   const [goal, setGoal] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
+  const redirectTo = import.meta.env.VITE_SITE_URL;
 
   const [loggedUser, setLoggedUser] = useState();
 
@@ -221,7 +222,7 @@ export default function RecommendationSurvey() {
       console.error("Profile insert error:", error.message);
       return;
     } else {
-      navigate(`${window.location.origin}/dashboard`);
+      navigate(`${redirectTo}/dashboard`);
       toast(`Welcome, ${loggedUser.user_metadata.display_name}`);
     }
   };
