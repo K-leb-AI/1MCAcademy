@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Waypoints, History } from "lucide-react";
 import { HiLightningBolt } from "react-icons/hi";
 import { IoPerson } from "react-icons/io5";
@@ -6,14 +6,63 @@ import Calendar20 from "../../components/calendar-20";
 import { RiProgress8Fill } from "react-icons/ri";
 import { ChartAreaDefault } from "../../components/chart";
 import { CarouselSpacing } from "../../components/Carousel";
+import { supabase } from "../../supabaseClient";
+import { PiSpinner } from "react-icons/pi";
 
 const Dashboard = () => {
+  const [loggedUser, setLoggedUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const handleAuth = async () => {
+      try {
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+        if (error) {
+          console.log("Error in dashboard page auth: ", error);
+        } else {
+          setLoggedUser(user);
+          const { data, error: profileError } = await supabase
+            .from("profile")
+            .select("*")
+            .eq("user_id", user?.id);
+
+          if (profileError) {
+            console.log("Error fetching profile:", profileError);
+          } else {
+            console.log(data[0]);
+            setUserProfile(data[0]);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    handleAuth();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
+        <PiSpinner className="animate-spin" size={40} />
+        <p className="mt-4 text-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (!userProfile && !loggedUser) {
+    return null;
+  }
   return (
-    <div className="mb-5 px-10">
+    <div className="mb-5 px-4 md:px-10">
       <div className="lg:flex items-center justify-between">
         <div className="mt-4 lg:mb-8 mb-2 font-bold text-2xl flex gap-2 items-center">
           <div className="w-8 aspect-square rounded-full bg-accent"></div>
-          Welcome back, Caleb!
+          Welcome back, {loggedUser.user_metadata.display_name.split(" ")[0]}
         </div>
         <div className="flex items-center mt-4 mb-8 gap-3">
           <div className="bg-accent text-foreground/50 flex h-8 items-center justify-center rounded-lg p-2 gap-1">
@@ -27,8 +76,8 @@ const Dashboard = () => {
             <span className="text-foreground font-semibold block leading-4">
               Current Skill Path
             </span>
-            <span className="text-xs text-foreground/50 ">
-              Web Developer . Intermediate
+            <span className="text-xs text-foreground/50 capitalize">
+              {userProfile.skill_path} . {userProfile.experience}
             </span>
           </div>
         </div>
@@ -46,11 +95,11 @@ const Dashboard = () => {
           <div className="flex flex-col lg:flex-row lg:justify-between">
             <div className="">
               <div className="flex gap-4 items-center-justify-center">
-                <p className="font-bold text-foreground text-2xl">
-                  Web Development
+                <p className="font-bold text-foreground text-2xl capitalize">
+                  {userProfile.skill_path}
                 </p>
                 <p className="px-3 bg-primary/5 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center">
-                  Beginner
+                  {userProfile.experience}
                 </p>
               </div>
               <div className="text-foreground/50 mt-1 flex gap-2">
@@ -68,20 +117,20 @@ const Dashboard = () => {
               <div className="gap-2"></div>
               <RiProgress8Fill size={12} className="text-foreground/50" />
               <p className="text-foreground/50">Your Progress: </p>
-              <span className="block lg:hidden text-primary">85%</span>
+              <span className="block lg:hidden text-primary">0%</span>
               <div
                 className="radial-progress lg:grid hidden text-primary"
                 style={
                   {
-                    "--value": "85",
+                    "--value": "0",
                     "--size": "4rem",
                     "--thickness": "4px",
                   } /* as React.CSSProperties */
                 }
-                aria-valuenow={85}
+                aria-valuenow={0}
                 role="progressbar"
               >
-                85%
+                0%
               </div>
             </div>
           </div>

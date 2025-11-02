@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { FcGoogle } from "react-icons/fc";
 import toast from "react-hot-toast";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { MdArrowBack } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../supabaseClient";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -42,14 +44,30 @@ const SignupForm = () => {
     }
     try {
       //make api call here
-      // toast.success("Account created! Please check your email for verification.");
-      //routing logic
-      navigate("/auth/survey");
-    } catch (error) {
-      console.log("Error in handleSignUp: ", error.message);
-      toast.error(error.message || "Signup failed. Please try again.");
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/survey`,
+          data: {
+            display_name: name,
+          },
+        },
+      });
+
+      localStorage.setItem("region", JSON.stringify(selectedRegion));
+
+      if (error) {
+        console.log("Error in handleSignUp: ", error.message);
+        toast.error(error.message || "Signup failed. Please try again.");
+        setLoading(false);
+        return;
+      } else {
+        toast("Please check your email for a verification link.");
+        navigate("/auth/check");
+      }
+    } finally {
       setLoading(false);
-      return;
     }
   };
 
@@ -73,6 +91,7 @@ const SignupForm = () => {
     "Savannah Region",
     "Upper East Region",
     "Upper West Region",
+    "Volta Region",
     "Western Region",
     "Western North Region",
   ];
@@ -94,6 +113,16 @@ const SignupForm = () => {
 
   return (
     <div className="flex items-center flex-col w-[300px]">
+      <div className="self-start mb-3">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800"
+          aria-label="Go back"
+        >
+          <MdArrowBack size={18} /> Back
+        </button>
+      </div>
       <form
         action=""
         className="flex justify-center items-center flex-col w-full"
@@ -106,7 +135,7 @@ const SignupForm = () => {
           <input
             type="text"
             id="name"
-            className="mt-4 w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
+            className="mt-4 w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
             onChange={(e) => setName(e.target.value)}
             value={name}
             placeholder="Full Name"
@@ -116,7 +145,7 @@ const SignupForm = () => {
           <input
             type="email"
             id="email"
-            className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
+            className="w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             placeholder="Email"
@@ -133,7 +162,7 @@ const SignupForm = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
+              className="w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 placeholder:text-sm"
               onChange={(e) => handleChange(e)}
               value={password}
               placeholder="Password"
@@ -170,7 +199,7 @@ const SignupForm = () => {
         <div className="relative w-full mb-4" ref={dropdownRef}>
           <div
             onClick={() => setIsOpen(!isOpen)}
-            className="w-full px-4 py-3 bg-background border-1 border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
+            className="w-full px-4 py-3 bg-background border border-border rounded-lg text-left focus:outline-none placeholder:text-foreground/30 text-sm transition flex items-center justify-between"
           >
             <span
               className={
@@ -189,16 +218,16 @@ const SignupForm = () => {
 
           {/* Dropdown Menu */}
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 md:top-0 md:left-[105%] md:w-4/5 mt-2 bg-white rounded-xl shadow-lg z-10">
+            <div className="absolute top-full left-0 right-0 md:-top-30 md:left-[105%] md:w-3/5 mt-2 bg-sidebar rounded-xl shadow-lg z-10">
               <ul className="py-2">
                 {regions.map((region) => (
                   <li key={region}>
                     <button
                       onClick={() => handleSelectRegion(region)}
-                      className={`w-full px-6 py-1 text-left transition text-sm ${
+                      className={`w-full px-6 py-1 text-left transition text-xs ${
                         selectedRegion === region
-                          ? "bg-white-1 bg-opacity-20"
-                          : "text-gray hover:bg-gray-100"
+                          ? "bg-accent bg-opacity-20"
+                          : "text-foreground/50 hover:bg-accent/40"
                       }`}
                     >
                       {region}

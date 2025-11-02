@@ -238,7 +238,7 @@ const MyLearning = () => {
     },
   ];
   return (
-    <div className="mb-5 px-10">
+    <div className="mb-5 px-4 md:px-10">
       {/* <div className="flex flex-col gap-6"> */}
       <div className="flex items-center justify-between my-6">
         <div className="font-bold text-2xl">My Learning Journey</div>
@@ -304,7 +304,7 @@ const MyLearning = () => {
       {/* Section 4: Badges */}
       <div className="mt-12">
         <h2 className="text-xl font-semibold mb-4">Badges</h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {completedCoursesData.map((completedCourse) => (
             <BadgeCard
               badgeName={completedCourse.badge}

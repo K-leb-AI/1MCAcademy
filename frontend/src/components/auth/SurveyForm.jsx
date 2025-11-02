@@ -1,43 +1,120 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { CiRedo } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
+import { supabase } from "../../supabaseClient";
+import toast from "react-hot-toast";
 
 const classes = [
-  { id: 1, name: "3D Modeling", subject: "3d-modeling", level: "beginner" },
-  { id: 2, name: "3D Modeling", subject: "3d-modeling", level: "intermediate" },
-  { id: 3, name: "3D Modeling", subject: "3d-modeling", level: "advanced" },
-  { id: 4, name: "VR Development", subject: "vr-dev", level: "beginner" },
-  { id: 5, name: "VR Development", subject: "vr-dev", level: "intermediate" },
-  { id: 6, name: "VR Development", subject: "vr-dev", level: "advanced" },
-  { id: 7, name: "Web Development", subject: "web-dev", level: "beginner" },
-  { id: 8, name: "Web Development", subject: "web-dev", level: "intermediate" },
-  { id: 9, name: "Web Development", subject: "web-dev", level: "advanced" },
-  { id: 10, name: "Python", subject: "python", level: "beginner" },
-  { id: 11, name: "Python", subject: "python", level: "intermediate" },
-  { id: 12, name: "Python", subject: "python", level: "advanced" },
+  {
+    id: 1,
+    name: "3D Modeling",
+    skill_path: "3d modeling and printing",
+    level: "beginner",
+  },
+  {
+    id: 2,
+    name: "3D Modeling",
+    skill_path: "3d modeling and printing",
+    level: "intermediate",
+  },
+  {
+    id: 3,
+    name: "3D Modeling",
+    skill_path: "3d modeling and printing",
+    level: "advanced",
+  },
+  {
+    id: 4,
+    name: "VR Development",
+    skill_path: "virtual reality development",
+    level: "beginner",
+  },
+  {
+    id: 5,
+    name: "VR Development",
+    skill_path: "virtual reality development",
+    level: "intermediate",
+  },
+  {
+    id: 6,
+    name: "VR Development",
+    skill_path: "virtual reality development",
+    level: "advanced",
+  },
+  {
+    id: 7,
+    name: "Web Development",
+    skill_path: "web development",
+    level: "beginner",
+  },
+  {
+    id: 8,
+    name: "Web Development",
+    skill_path: "web development",
+    level: "intermediate",
+  },
+  {
+    id: 9,
+    name: "Web Development",
+    skill_path: "web development",
+    level: "advanced",
+  },
+  {
+    id: 10,
+    name: "Python",
+    skill_path: "python programming",
+    level: "beginner",
+  },
+  {
+    id: 11,
+    name: "Python",
+    skill_path: "python programming",
+    level: "intermediate",
+  },
+  {
+    id: 12,
+    name: "Python",
+    skill_path: "python programming",
+    level: "advanced",
+  },
   {
     id: 13,
     name: "Entrepreneurship",
-    subject: "entrepreneurship",
+    skill_path: "entrepreneurship",
     level: "beginner",
   },
   {
     id: 14,
     name: "Entrepreneurship",
-    subject: "entrepreneurship",
+    skill_path: "entrepreneurship",
     level: "intermediate",
   },
   {
     id: 15,
     name: "Entrepreneurship",
-    subject: "entrepreneurship",
+    skill_path: "entrepreneurship",
     level: "advanced",
   },
-  { id: 16, name: "Drone Piloting", subject: "drone", level: "beginner" },
-  { id: 17, name: "Drone Piloting", subject: "drone", level: "intermediate" },
-  { id: 18, name: "Drone Piloting", subject: "drone", level: "advanced" },
+  {
+    id: 16,
+    name: "Drone Piloting",
+    skill_path: "drone piloting",
+    level: "beginner",
+  },
+  {
+    id: 17,
+    name: "Drone Piloting",
+    skill_path: "drone piloting",
+    level: "intermediate",
+  },
+  {
+    id: 18,
+    name: "Drone Piloting",
+    skill_path: "drone piloting",
+    level: "advanced",
+  },
 ];
 
 function getRecommendations(experienceLevel, interest, goal) {
@@ -45,16 +122,20 @@ function getRecommendations(experienceLevel, interest, goal) {
 
   if (interest === "design") {
     recommended = recommended.filter((c) =>
-      ["3d-modeling", "vr-dev"].includes(c.subject)
+      ["3d modeling and printing", "virtual reality development"].includes(
+        c.skill_path
+      )
     );
   } else if (interest === "software") {
     recommended = recommended.filter((c) =>
-      ["web-dev", "python"].includes(c.subject)
+      ["web development", "python programming"].includes(c.skill_path)
     );
   } else if (interest === "hardware") {
-    recommended = recommended.filter((c) => c.subject === "drone");
+    recommended = recommended.filter((c) => c.skill_path === "drone piloting");
   } else if (interest === "business") {
-    recommended = recommended.filter((c) => c.subject === "entrepreneurship");
+    recommended = recommended.filter(
+      (c) => c.skill_path === "entrepreneurship"
+    );
   }
   return recommended;
 }
@@ -81,22 +162,22 @@ const interestOptions = [
   {
     value: "design",
     label: "Creative and Design",
-    subjects: "3D Modeling, VR Development",
+    skill_paths: "3D Modeling, VR Development",
   },
   {
     value: "software",
     label: "Software Development",
-    subjects: "Web Dev, Python",
+    skill_paths: "Web Dev, Python",
   },
   {
     value: "hardware",
     label: "Hardware and Physical Projects",
-    subjects: "Drone Piloting",
+    skill_paths: "Drone Piloting",
   },
   {
     value: "business",
     label: "Business and Entrepreneurship",
-    subjects: "Entrepreneurship",
+    skill_paths: "Entrepreneurship",
   },
 ];
 
@@ -119,8 +200,30 @@ export default function RecommendationSurvey() {
   const [goal, setGoal] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
 
-  const handleEnroll = () => {
-    navigate("/dashboard");
+  const [loggedUser, setLoggedUser] = useState();
+
+  const handleEnroll = async (recommendation) => {
+    let region = localStorage.getItem("region");
+    region = JSON.parse(region);
+    const { data, error } = await supabase
+      .from("profile")
+      .insert({
+        experience: recommendation.level,
+        skill_path: recommendation.skill_path,
+        user_id: loggedUser.id,
+        region,
+      })
+      .select();
+
+    console.log(data);
+
+    if (error) {
+      console.error("Profile insert error:", error.message);
+      return;
+    } else {
+      navigate(`${window.location.origin}/dashboard`);
+      toast(`Welcome, ${loggedUser.user_metadata.display_name}`);
+    }
   };
 
   const handleContinue = () => {
@@ -131,6 +234,8 @@ export default function RecommendationSurvey() {
     } else if (step === 2 && goal) {
       const recs = getRecommendations(experience, interest, goal);
       setRecommendations(recs);
+      console.log(recs);
+
       setStep(3);
     }
   };
@@ -151,6 +256,22 @@ export default function RecommendationSurvey() {
     setGoal(null);
     setRecommendations(null);
   };
+
+  useEffect(() => {
+    const handleAuth = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) setLoggedUser(user);
+      } catch (error) {
+        console.error("Error in survey for auth:", error);
+      }
+    };
+
+    handleAuth();
+  });
 
   return (
     <div className="flex items-center flex-col w-[300px]">
@@ -192,7 +313,7 @@ export default function RecommendationSurvey() {
                       <button
                         key={opt.value}
                         onClick={() => setExperience(opt.value)}
-                        className={`w-full p-4 border-1 rounded-lg text-left transition-all cursor-pointer ${
+                        className={`w-full p-4 border rounded-lg text-left transition-all cursor-pointer ${
                           experience === opt.value
                             ? "border-primary bg-primary/5"
                             : "border-gray/30 hover:border-primary/60"
@@ -225,7 +346,7 @@ export default function RecommendationSurvey() {
                       <button
                         key={opt.value}
                         onClick={() => setInterest(opt.value)}
-                        className={`w-full p-4 border-1 rounded-lg text-left transition-all ${
+                        className={`w-full p-4 border rounded-lg text-left transition-all ${
                           interest === opt.value
                             ? "border-primary bg-primary/5"
                             : "border-gray/30 hover:border-primary/60"
@@ -235,7 +356,7 @@ export default function RecommendationSurvey() {
                           {opt.label}
                         </div>
                         <div className="text-xs text-foreground/50">
-                          {opt.subjects}
+                          {opt.skill_paths}
                         </div>
                       </button>
                     ))}
@@ -262,7 +383,7 @@ export default function RecommendationSurvey() {
                       <button
                         key={opt.value}
                         onClick={() => setGoal(opt.value)}
-                        className={`w-full p-4 border-1 rounded-lg text-left transition-all ${
+                        className={`w-full p-4 border rounded-lg text-left transition-all ${
                           goal === opt.value
                             ? "border-primary bg-primary/5"
                             : "border-gray/30 hover:border-primary/60"
@@ -312,7 +433,7 @@ export default function RecommendationSurvey() {
                 {recommendations.map((cls) => (
                   <div
                     key={cls.id}
-                    className="px-6 py-4 border-1 border-primary rounded-lg hover:shadow-md transition-shadow bg-primary/5"
+                    className="px-6 py-4 border border-primary rounded-lg hover:shadow-md transition-shadow bg-primary/5"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -327,7 +448,7 @@ export default function RecommendationSurvey() {
                       </div>
                       <button
                         className="bg-primary hover:bg-primary/80 text-primary-foreground px-4 py-1 rounded-lg font-medium transition-colors cursor-pointer"
-                        onClick={handleEnroll}
+                        onClick={() => handleEnroll(cls)}
                       >
                         Enroll
                       </button>

@@ -421,7 +421,7 @@ const Courses = () => {
   };
 
   return (
-    <div className="mb-5 px-10">
+    <div className="mb-5 px-4 md:px-10">
       <div className="flex w-full max-w-xl items-center gap-2 relative">
         <Input
           type="text"
@@ -444,8 +444,8 @@ const Courses = () => {
       </div>
 
       <div className="mt-4 grid  sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredSearch.map((course) => (
-          <CourseCard course={course} />
+        {filteredSearch.map((course, index) => (
+          <CourseCard course={course} key={index} />
         ))}
       </div>
     </div>

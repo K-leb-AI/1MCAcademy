@@ -26,7 +26,7 @@ export default function Calendar20() {
   return (
     <Card className="gap-0 p-0">
       <CardContent className="relative p-0 md:pr-48">
-        <div className="p-6">
+        <div className="grid place-items-center pt-5">
           <Calendar
             mode="single"
             selected={date}
@@ -63,7 +63,7 @@ export default function Calendar20() {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-4 border-t px-6 !py-5 md:flex-row">
+      <CardFooter className="flex flex-col gap-4 border-t px-6 py-5 md:flex-row">
         <div className="text-sm">
           {date && selectedTime ? (
             <>
