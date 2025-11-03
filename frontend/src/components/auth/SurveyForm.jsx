@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { CiRedo } from "react-icons/ci";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { supabase } from "../../supabaseClient";
 import toast from "react-hot-toast";
 
+// === CLASS OPTIONS ===
 const classes = [
   {
     id: 1,
@@ -117,6 +118,7 @@ const classes = [
   },
 ];
 
+// === HELPER FUNCTION ===
 function getRecommendations(experienceLevel, interest, goal) {
   let recommended = classes.filter((c) => c.level === experienceLevel);
 
@@ -137,9 +139,11 @@ function getRecommendations(experienceLevel, interest, goal) {
       (c) => c.skill_path === "entrepreneurship"
     );
   }
+
   return recommended;
 }
 
+// === SURVEY OPTIONS ===
 const experienceOptions = [
   {
     value: "beginner",
@@ -192,20 +196,66 @@ const goalOptions = [
   { value: "career", label: "Career change or advancement", emoji: "💼" },
 ];
 
+// === MAIN COMPONENT ===
 export default function RecommendationSurvey() {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
   const [step, setStep] = useState(0);
   const [experience, setExperience] = useState(null);
   const [interest, setInterest] = useState(null);
   const [goal, setGoal] = useState(null);
-  const [recommendations, setRecommendations] = useState(null);
-  const redirectTo = import.meta.env.VITE_SITE_URL;
+  const [recommendations, setRecommendations] = useState([]);
+  const [loggedUser, setLoggedUser] = useState(null);
 
-  const [loggedUser, setLoggedUser] = useState();
+  // === Handle Supabase Auth ===
+  useEffect(() => {
+    const handleAuth = async () => {
+      try {
+        const code = searchParams.get("code");
+        if (code) {
+          await supabase.auth.exchangeCodeForSession(code);
+        }
 
+        const {
+          data: { user },
+          error,
+        } = await supabase.auth.getUser();
+
+        if (error) {
+          console.error("Error in Survey auth:", error.message);
+          return;
+        }
+
+        if (!user) {
+          console.log("Unauthenticated");
+          navigate("/");
+          return;
+        }
+
+        setLoggedUser(user);
+      } catch (error) {
+        console.error("Auth handling error:", error.message);
+      }
+    };
+
+    handleAuth();
+  }, [navigate, searchParams]);
+
+  // === Handle Enroll ===
   const handleEnroll = async (recommendation) => {
+    if (!loggedUser?.id) {
+      toast.error("Please log in again.");
+      return;
+    }
+
     let region = localStorage.getItem("region");
-    region = JSON.parse(region);
+    try {
+      region = JSON.parse(region);
+    } catch {
+      region = null;
+    }
+
     const { data, error } = await supabase
       .from("profile")
       .insert({
@@ -216,38 +266,31 @@ export default function RecommendationSurvey() {
       })
       .select();
 
-    console.log(data);
-
     if (error) {
       console.error("Profile insert error:", error.message);
+      toast.error("Something went wrong. Please try again.");
       return;
-    } else {
-      navigate(`${redirectTo}/dashboard`);
-      toast(`Welcome, ${loggedUser.user_metadata.display_name}`);
     }
+
+    toast.success(`Welcome, ${loggedUser.user_metadata.display_name}!`);
+    navigate("/dashboard");
   };
 
+  // === Step navigation ===
   const handleContinue = () => {
-    if (step === 0 && experience) {
-      setStep(1);
-    } else if (step === 1 && interest) {
-      setStep(2);
-    } else if (step === 2 && goal) {
-      const recs = getRecommendations(experience, interest, goal);
-      setRecommendations(recs);
-      console.log(recs);
-
+    if (step === 0 && experience) setStep(1);
+    else if (step === 1 && interest) setStep(2);
+    else if (step === 2 && goal) {
+      setRecommendations(getRecommendations(experience, interest, goal));
       setStep(3);
     }
   };
 
   const handleBack = () => {
     if (step === 3) {
-      setRecommendations(null);
+      setRecommendations([]);
       setStep(2);
-    } else if (step > 0) {
-      setStep(step - 1);
-    }
+    } else if (step > 0) setStep(step - 1);
   };
 
   const handleReset = () => {
@@ -255,37 +298,21 @@ export default function RecommendationSurvey() {
     setExperience(null);
     setInterest(null);
     setGoal(null);
-    setRecommendations(null);
+    setRecommendations([]);
   };
 
-  useEffect(() => {
-    const handleAuth = async () => {
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (user) setLoggedUser(user);
-      } catch (error) {
-        console.error("Error in survey for auth:", error);
-      }
-    };
-
-    handleAuth();
-  });
-
+  // === UI ===
   return (
     <div className="flex items-center flex-col w-[300px]">
       <div className="w-full max-w-2xl">
         {step < 3 ? (
-          <div className="">
+          <div>
             {step > 0 && (
               <button
                 onClick={handleBack}
                 className="flex items-center gap-2 text-foreground mb-6 font-medium cursor-pointer"
               >
-                <FaChevronLeft size={10} />
-                Back
+                <FaChevronLeft size={10} /> Back
               </button>
             )}
 
@@ -298,33 +325,28 @@ export default function RecommendationSurvey() {
                   transition: { duration: 0.5 },
                 }}
               >
-                <div className="flex flex-col justify-center items-center">
-                  <h1 className="text-2xl font-bold text-foreground mb-2">
-                    Let's get to know you
-                  </h1>
-                  <p className="text-muted-foreground mb-8 text-center text-sm">
-                    To find the perfect class for you, We'd like to ask just a
-                    few questions.
-                  </p>
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-foreground mb-6 text-center">
-                      What is your experience level with technology?
-                    </h2>
-                    {experienceOptions.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => setExperience(opt.value)}
-                        className={`w-full p-4 border rounded-lg text-left transition-all cursor-pointer ${
-                          experience === opt.value
-                            ? "border-primary bg-primary/5"
-                            : "border-gray/30 hover:border-primary/60"
-                        }`}
-                      >
-                        <div className="font-semibold text-sm">{opt.label}</div>
-                        <div className="text-xs text-gray">{opt.desc}</div>
-                      </button>
-                    ))}
-                  </div>
+                <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
+                  Let's get to know you
+                </h1>
+                <p className="text-muted-foreground mb-8 text-center text-sm">
+                  To find the perfect class for you, we'd like to ask just a few
+                  questions.
+                </p>
+                <div className="space-y-4">
+                  {experienceOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setExperience(opt.value)}
+                      className={`w-full p-4 border rounded-lg text-left transition-all cursor-pointer ${
+                        experience === opt.value
+                          ? "border-primary bg-primary/5"
+                          : "border-gray/30 hover:border-primary/60"
+                      }`}
+                    >
+                      <div className="font-semibold text-sm">{opt.label}</div>
+                      <div className="text-xs text-gray">{opt.desc}</div>
+                    </button>
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -338,30 +360,28 @@ export default function RecommendationSurvey() {
                   transition: { duration: 0.5 },
                 }}
               >
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground mb-6 text-center">
-                    What interests you most?
-                  </h2>
-                  <div className="space-y-4">
-                    {interestOptions.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => setInterest(opt.value)}
-                        className={`w-full p-4 border rounded-lg text-left transition-all ${
-                          interest === opt.value
-                            ? "border-primary bg-primary/5"
-                            : "border-gray/30 hover:border-primary/60"
-                        }`}
-                      >
-                        <div className="font-semibold text-foreground text-sm">
-                          {opt.label}
-                        </div>
-                        <div className="text-xs text-foreground/50">
-                          {opt.skill_paths}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                <h2 className="text-xl font-semibold text-foreground mb-6 text-center">
+                  What interests you most?
+                </h2>
+                <div className="space-y-4">
+                  {interestOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setInterest(opt.value)}
+                      className={`w-full p-4 border rounded-lg text-left transition-all ${
+                        interest === opt.value
+                          ? "border-primary bg-primary/5"
+                          : "border-gray/30 hover:border-primary/60"
+                      }`}
+                    >
+                      <div className="font-semibold text-foreground text-sm">
+                        {opt.label}
+                      </div>
+                      <div className="text-xs text-foreground/50">
+                        {opt.skill_paths}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -375,27 +395,25 @@ export default function RecommendationSurvey() {
                   transition: { duration: 0.5 },
                 }}
               >
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground mb-6 text-center">
-                    What is your main goal?
-                  </h2>
-                  <div className="space-y-4">
-                    {goalOptions.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => setGoal(opt.value)}
-                        className={`w-full p-4 border rounded-lg text-left transition-all ${
-                          goal === opt.value
-                            ? "border-primary bg-primary/5"
-                            : "border-gray/30 hover:border-primary/60"
-                        }`}
-                      >
-                        <div className="font-semibold text-foreground text-sm">
-                          {opt.emoji} {opt.label}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                <h2 className="text-xl font-semibold text-foreground mb-6 text-center">
+                  What is your main goal?
+                </h2>
+                <div className="space-y-4">
+                  {goalOptions.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setGoal(opt.value)}
+                      className={`w-full p-4 border rounded-lg text-left transition-all ${
+                        goal === opt.value
+                          ? "border-primary bg-primary/5"
+                          : "border-gray/30 hover:border-primary/60"
+                      }`}
+                    >
+                      <div className="font-semibold text-foreground text-sm">
+                        {opt.emoji} {opt.label}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -422,50 +440,47 @@ export default function RecommendationSurvey() {
               transition: { duration: 0.5 },
             }}
           >
-            <div>
-              <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
-                Your Recommendations
-              </h1>
-              <p className="text-gray mb-8 text-center">
-                Based on your answers, here are the perfect classes for you:
-              </p>
+            <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
+              Your Recommendations
+            </h1>
+            <p className="text-gray mb-8 text-center">
+              Based on your answers, here are the perfect classes for you:
+            </p>
 
-              <div className="space-y-4 mb-8">
-                {recommendations.map((cls) => (
-                  <div
-                    key={cls.id}
-                    className="px-6 py-4 border border-primary rounded-lg hover:shadow-md transition-shadow bg-primary/5"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground">
-                          {cls.name}
-                        </h3>
-                        <div className="mt-1 inline-block">
-                          <span className="px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full capitalize">
-                            {cls.level}
-                          </span>
-                        </div>
+            <div className="space-y-4 mb-8">
+              {recommendations.map((cls) => (
+                <div
+                  key={cls.id}
+                  className="px-6 py-4 border border-primary rounded-lg hover:shadow-md transition-shadow bg-primary/5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">
+                        {cls.name}
+                      </h3>
+                      <div className="mt-1 inline-block">
+                        <span className="px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full capitalize">
+                          {cls.level}
+                        </span>
                       </div>
-                      <button
-                        className="bg-primary hover:bg-primary/80 text-primary-foreground px-4 py-1 rounded-lg font-medium transition-colors cursor-pointer"
-                        onClick={() => handleEnroll(cls)}
-                      >
-                        Enroll
-                      </button>
                     </div>
+                    <button
+                      className="bg-primary hover:bg-primary/80 text-primary-foreground px-4 py-1 rounded-lg font-medium transition-colors cursor-pointer"
+                      onClick={() => handleEnroll(cls)}
+                    >
+                      Enroll
+                    </button>
                   </div>
-                ))}
-              </div>
-
-              <button
-                onClick={handleReset}
-                className="flex gap-2 justify-center items-center w-full bg-primary hover:bg-primary/80 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors cursor-pointer"
-              >
-                <CiRedo size={20} />
-                Start Over
-              </button>
+                </div>
+              ))}
             </div>
+
+            <button
+              onClick={handleReset}
+              className="flex gap-2 justify-center items-center w-full bg-primary hover:bg-primary/80 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors cursor-pointer"
+            >
+              <CiRedo size={20} /> Start Over
+            </button>
           </motion.div>
         )}
       </div>

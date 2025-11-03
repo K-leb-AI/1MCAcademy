@@ -114,7 +114,7 @@ const SignupForm = () => {
 
   return (
     <div className="flex items-center flex-col w-[300px]">
-      <div className="self-start mb-3">
+      {/* <div className="self-start mb-3">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -123,7 +123,7 @@ const SignupForm = () => {
         >
           <MdArrowBack size={18} /> Back
         </button>
-      </div>
+      </div> */}
       <form
         action=""
         className="flex justify-center items-center flex-col w-full"
