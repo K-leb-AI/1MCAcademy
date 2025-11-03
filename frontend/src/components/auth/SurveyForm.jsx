@@ -222,7 +222,7 @@ export default function RecommendationSurvey() {
       console.error("Profile insert error:", error.message);
       return;
     } else {
-      navigate(`${redirectTo}/dashboard`);
+      navigate(`/dashboard`);
       toast(`Welcome, ${loggedUser.user_metadata.display_name}`);
     }
   };

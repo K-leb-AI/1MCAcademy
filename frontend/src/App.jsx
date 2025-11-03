@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ModeToggle } from "./components/ThemeToggle";
-import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
@@ -11,7 +10,6 @@ function App() {
       <main>
         <Outlet />
       </main>
-      {/* <LandingPage/> */}
     </>
   );
 }

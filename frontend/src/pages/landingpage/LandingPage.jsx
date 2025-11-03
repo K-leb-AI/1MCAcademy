@@ -22,7 +22,7 @@ const LandingPage = () => {
       <section className="w-full max-w-4xl mx-auto text-center relative">
         <div className="bg-white/90 dark:bg-slate-800/80 rounded-2xl p-12 sm:p-16 shadow-xl backdrop-blur-md">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white leading-tight mb-4">
-            Welcome to Nunya Learners' Arena
+            Welcome to Nunya Learns' Arena
           </h1>
           <p className="text-lg sm:text-2xl text-slate-700 dark:text-slate-300 max-w-2xl mx-auto mb-8">
             Explore curated courses, hands-on projects, and a supportive
