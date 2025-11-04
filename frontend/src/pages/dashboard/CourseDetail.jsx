@@ -80,7 +80,7 @@ const CourseDetail = () => {
               Watch Pre-recorded Sessions
             </button>
             <button className="py-2 flex items-center justify-center bg-primary hover:bg-primary/80 text-white w-full rounded-xl mt-2 cursor-pointer duration-300">
-              Buy Course
+              Enroll Now
             </button>
           </div>
         </div>
