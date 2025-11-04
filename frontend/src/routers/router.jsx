@@ -13,6 +13,7 @@ import NotificationMessage from "../components/NotificationMessage.jsx";
 import Check from "../pages/auth/Check.jsx";
 import Survey from "../pages/auth/Survey.jsx";
 import LandingPage from "../pages/landingpage/LandingPage.jsx";
+import CourseDetail from "../pages/dashboard/CourseDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
           {
             path: "/dashboard/courses",
             element: <Courses />,
+          },
+          {
+            path: "/dashboard/courses/:courseId",
+            element: <CourseDetail />,
           },
           {
             path: "/dashboard/my-learning",

@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/K-leb-AI/1MCAcademy/issues"
   },
-  "homepage": "https://github.com/K-leb-AI/1MCAcademy#readme"
+  "homepage": "https://github.com/K-leb-AI/1MCAcademy#readme",
+  "dependencies": {
+    "react-markdown": "^10.1.0"
+  }
 }

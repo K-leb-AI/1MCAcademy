@@ -19,12 +19,29 @@ export default function Page() {
   const location = useLocation();
   const navigate = useNavigate();
   const segments = location.pathname.split("/").filter((seg) => seg);
-  const formatSegment = (seg) => {
-    const subseg = seg.split("-").join(" ");
-    return subseg.charAt(0).toUpperCase() + subseg.slice(1);
+  const [courseTitle, setCourseTitle] = useState();
+
+  const formatSegment = (seg, prev) => {
+    checkSegment(seg, prev);
+    let subseg = prev === "courses" ? courseTitle : seg.split("-").join(" ");
+    return subseg;
   };
+
   const [loggedUser, setLoggedUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const checkSegment = async (seg, prev) => {
+    if (prev === "courses") {
+      const { data: fetchedTitle, error: fetchCourseError } = await supabase
+        .from("course")
+        .select("title")
+        .eq("id", seg);
+
+      if (fetchCourseError === null) {
+        setCourseTitle(fetchedTitle[0].title);
+      }
+    }
+  };
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -43,7 +60,6 @@ export default function Page() {
           console.log("Error in Dashboard auth: ", error);
           return;
         }
-
         setLoggedUser(user);
       } finally {
         setIsLoading(false);
@@ -72,7 +88,7 @@ export default function Page() {
       <SidebarInset className="text-sm">
         <ModeToggle />
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1 hover:bg-sidebar-accent" />
+          <SidebarTrigger className="-ml-1 hover:bg-sidebar-accent z-20" />
           <Separator
             orientation="vertical"
             className="mr-2 data-[orientation=vertical]:h-4"
@@ -84,7 +100,10 @@ export default function Page() {
                 const isLast = index === segments.length - 1;
 
                 return (
-                  <BreadcrumbItem className="hidden md:block" key={index}>
+                  <BreadcrumbItem
+                    className="hidden md:block capitalize"
+                    key={index}
+                  >
                     {!isLast ? (
                       <div className="flex items-center gap-1">
                         <BreadcrumbLink asChild>
@@ -93,7 +112,9 @@ export default function Page() {
                         <ChevronRight className="hidden md:block" size={14} />
                       </div>
                     ) : (
-                      <BreadcrumbPage>{formatSegment(segment)}</BreadcrumbPage>
+                      <BreadcrumbPage>
+                        {formatSegment(segment, segments[index - 1])}
+                      </BreadcrumbPage>
                     )}
                   </BreadcrumbItem>
                 );
