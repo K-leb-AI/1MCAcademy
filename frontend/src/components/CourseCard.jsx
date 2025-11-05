@@ -61,7 +61,7 @@ const CourseCard = ({ course, onClick }) => {
       <div>
         <img
           src={course.thumbnail_url}
-          className="aspect-3/2 rounded-xl object-cover w-500px"
+          className="aspect-3/2 rounded-xl object-cover object-center w-500px"
           loading="lazy"
         />
         <div className=" flex gap-2 items-center mt-3 justify-between">

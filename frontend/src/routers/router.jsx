@@ -14,12 +14,17 @@ import Check from "../pages/auth/Check.jsx";
 import Survey from "../pages/auth/Survey.jsx";
 import LandingPage from "../pages/landingpage/LandingPage.jsx";
 import CourseDetail from "../pages/dashboard/CourseDetail.jsx";
+import NotFound from "../components/NotFound.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "*",
+        element: <NotFound />,
+      },
       {
         path: "/",
         element: <LandingPage />,

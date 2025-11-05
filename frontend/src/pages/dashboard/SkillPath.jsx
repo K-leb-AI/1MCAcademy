@@ -36,7 +36,6 @@ const SkillPath = () => {
         "Interactive environment scripting",
         "Performance optimization",
       ],
-      levels: ["Beginner", "Intermediate", "Advanced"],
     },
     {
       id: 3,
@@ -51,7 +50,6 @@ const SkillPath = () => {
         "APIs and backend basics",
         "Deployment and version control",
       ],
-      levels: ["Beginner", "Intermediate", "Advanced"],
     },
     {
       id: 4,
@@ -66,7 +64,6 @@ const SkillPath = () => {
         "APIs and file handling",
         "Automation and scripting",
       ],
-      levels: ["Beginner", "Intermediate", "Advanced"],
     },
     {
       id: 5,
@@ -81,7 +78,6 @@ const SkillPath = () => {
         "Pitching and fundraising",
         "Scaling operations",
       ],
-      levels: ["Beginner", "Intermediate", "Advanced"],
     },
     {
       id: 6,
@@ -96,7 +92,6 @@ const SkillPath = () => {
         "Aerial photography",
         "Mission planning and mapping",
       ],
-      levels: ["Beginner", "Intermediate", "Advanced"],
     },
   ];
 
@@ -250,10 +245,6 @@ const SkillPath = () => {
                 <li key={i}>• {skill}</li>
               ))}
             </ul>
-
-            <p className="text-xs text-primary font-medium">
-              Levels: {path.levels.join(" → ")}
-            </p>
           </div>
         ))}
       </div>
