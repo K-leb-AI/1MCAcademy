@@ -44,7 +44,7 @@ const CourseDetail = () => {
 
   return (
     <div className="px-4 md:px-5 lg:px-35 mt-10 flex md:flex-row flex-col md:gap-5 lg:gap-15 gap-2">
-      <div className="w-full md:w-1/3 h-[35vh] md:h-[85vh] bg-sidebar rounded-2xl border border-border sticky top-4 flex md:block">
+      <div className="w-full md:w-1/3 h-[40vh] md:h-[85vh] bg-sidebar rounded-2xl border border-border sticky top-4 flex md:block">
         <div className="absolute py-3 px-2 bg-primary flex flex-col items-center justify-center top-3 left-3 rounded-xl text-white gap-2">
           <p className="font-bold leading-2 text-xs">GH₵</p>
           <p className="font-bold text-3xl leading-4">{course.price}</p>
@@ -82,7 +82,7 @@ const CourseDetail = () => {
               href="https://meet.google.com/cdv-sgsp-poj"
               target="_blank"
             >
-              Join Recorded Sessions
+              Join Live Session
             </a>
             <button className="py-2 flex items-center justify-center text-xs bg-primary hover:bg-primary/80 text-white w-full rounded-xl mt-2 cursor-pointer duration-300">
               Enroll Now

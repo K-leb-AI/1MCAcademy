@@ -243,7 +243,7 @@ const MyLearning = () => {
       <div className="flex items-center justify-between my-6">
         <div className="font-bold text-2xl">My Learning Journey</div>
 
-        <Dialog>
+        {/* <Dialog>
           <DialogTrigger>
             <div className="flex h-8 items-center justify-center rounded-lg p-2 gap-2 bg-primary text-white hover:bg-primary/80 duration-300 cursor-pointer">
               <AlarmCheck size={17} />
@@ -260,7 +260,7 @@ const MyLearning = () => {
               <Calendar20 />
             </DialogHeader>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
       </div>
 
       {/* Section 1: Overview Summary */}

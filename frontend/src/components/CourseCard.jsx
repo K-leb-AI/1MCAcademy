@@ -20,10 +20,7 @@ import ReactMarkdown from "react-markdown";
 
 const CourseCard = ({ course, onClick }) => {
   return (
-    <div
-      className="bg-sidebar border border-border flex flex-col justify-between rounded-xl p-3 hover:scale-[1.01] duration-300 relative"
-      onClick={onClick}
-    >
+    <div className="bg-sidebar border border-border flex flex-col justify-between rounded-xl p-3 hover:scale-[1.01] duration-300 relative">
       <Tooltip>
         <div className="absolute top-6 right-6 w-8 aspect-square flex justify-center items-center rounded-xl bg-accent text-foreground">
           <TooltipTrigger>
@@ -111,7 +108,7 @@ const CourseCard = ({ course, onClick }) => {
 
       <div className="flex items-center mt-5 justify-between">
         <p className="text-lg font-medium ">GH₵ {course.price}</p>
-        <Button className="cursor-pointer" variant="default">
+        <Button className="cursor-pointer" variant="default" onClick={onClick}>
           View
         </Button>
       </div>
