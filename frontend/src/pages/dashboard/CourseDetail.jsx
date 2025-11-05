@@ -4,12 +4,14 @@ import { supabase } from "../../supabaseClient";
 import { PiSpinner } from "react-icons/pi";
 import ReactMarkdown from "react-markdown";
 import { Star, Radio } from "lucide-react";
+import toast from "react-hot-toast";
 
 const CourseDetail = () => {
   const courseId = useLocation().pathname.split("/").pop();
   const [course, setCourse] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [loggedUser, setLoggedUser] = useState();
+  const navigate = useNavigate();
 
   const handleEnroll = async () => {
     try {
@@ -47,7 +49,9 @@ const CourseDetail = () => {
         }
 
         if (error || authError) {
+          toast("Error Fetching Course");
           console.log("Error Fetching Course: ", error || authError);
+          navigate(-1);
         } else {
           setCourse(data[0]);
           setLoggedUser(user);
