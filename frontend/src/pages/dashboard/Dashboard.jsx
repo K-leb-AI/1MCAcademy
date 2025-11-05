@@ -67,7 +67,7 @@ const Dashboard = () => {
         <div className="flex items-center mt-4 mb-8 gap-3">
           <div className="bg-accent text-foreground/50 flex h-8 items-center justify-center rounded-lg p-2 gap-1">
             <HiLightningBolt size={17} />
-            <p>16</p>
+            <p>1</p>
           </div>
           <div className="bg-accent text-foreground/50 flex aspect-square size-8 items-center justify-center rounded-lg p-2">
             <Waypoints size={17} />
