@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
 import { PiSpinner } from "react-icons/pi";
 import ReactMarkdown from "react-markdown";
@@ -8,8 +8,9 @@ import { Star, Radio } from "lucide-react";
 const CourseDetail = () => {
   const courseId = useLocation().pathname.split("/").pop();
   const [course, setCourse] = useState();
-  const [instructor, setInstructor] = useState();
+  //   const [instructor, setInstructor] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -76,10 +77,14 @@ const CourseDetail = () => {
           </div>
 
           <div className="mt-4">
-            <button className="py-2 flex items-center justify-center hover:bg-primary/15 bg-primary/20 border border-primary/20 text-primary w-full rounded-xl cursor-pointer duration-300">
-              Watch Pre-recorded Sessions
-            </button>
-            <button className="py-2 flex items-center justify-center bg-primary hover:bg-primary/80 text-white w-full rounded-xl mt-2 cursor-pointer duration-300">
+            <a
+              className="py-2 flex items-center justify-center text-xs hover:bg-primary/15 bg-primary/20 border border-primary/20 text-primary w-full rounded-xl cursor-pointer duration-300"
+              href="https://meet.google.com/cdv-sgsp-poj"
+              target="_blank"
+            >
+              Join Recorded Sessions
+            </a>
+            <button className="py-2 flex items-center justify-center text-xs bg-primary hover:bg-primary/80 text-white w-full rounded-xl mt-2 cursor-pointer duration-300">
               Enroll Now
             </button>
           </div>

@@ -57,7 +57,7 @@ const CourseCard = ({ course, onClick }) => {
             )}
           </TooltipTrigger>
         </div>
-        <TooltipContent>
+        <TooltipContent className="capitalize">
           <p>{course.skill_path}</p>
         </TooltipContent>
       </Tooltip>

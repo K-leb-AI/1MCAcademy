@@ -56,7 +56,7 @@ export const LandingPage = () => {
       {/* Navigation */}
       <nav className="fixed w-full top-0 z-25 bg-background border-b border-border">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="text-lg font-bold">Nunya</div>
+          <div className="text-lg font-bold">Nunya Learners' Arena</div>
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -159,7 +159,7 @@ export const LandingPage = () => {
               of nine passionate innovators led by Mr. Makafui Bedzra, Manager
               of the Innovation Center at the College of Engineering, KNUST. The
               team — Caleb Lamptey, Mary Asamoah, Sefam Adagbe, Nathaniel Sambi,
-              Christian Addy, Michael Osei Frimpong, Faisal Nurudeen, and Bubune
+              Christian Addy, Michael Osei Frimpong, Faisal Nurideen, and Bubune
               Doe-Kiinnii — brings together expertise in software development,
               instructional design, community engagement, and education
               technology.
