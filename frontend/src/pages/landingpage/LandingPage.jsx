@@ -258,9 +258,9 @@ export const LandingPage = () => {
             },
           ].map((testimonial, i) => (
             <div key={i} className="p-6 border border-border/50 rounded-xl">
-              <p className="text-slate-600 mb-4">"{testimonial.text}"</p>
+              <p className="text-foreground/60 mb-4">"{testimonial.text}"</p>
               <p className="font-semibold text-sm">{testimonial.name}</p>
-              <p className="text-xs text-slate-600">{testimonial.role}</p>
+              <p className="text-xs text-foreground/60">{testimonial.role}</p>
             </div>
           ))}
         </div>
