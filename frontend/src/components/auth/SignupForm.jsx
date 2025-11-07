@@ -24,6 +24,7 @@ const SignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  // const redirectTo = window.location.origin;
   const redirectTo = import.meta.env.VITE_SITE_URL;
 
   //check password
@@ -39,33 +40,49 @@ const SignupForm = () => {
     e.preventDefault();
     setLoading(true);
 
-    //check email
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email) || !email) {
       toast.error("Enter a valid email.");
+      setLoading(false);
+      return;
+    } else if (!password || !selectedRegion || !name) {
+      toast.error("All fields must be filled.");
+      setLoading(false);
+      return;
     }
     try {
       //make api call here
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${redirectTo}/auth/survey`,
-          data: {
-            display_name: name,
+      const { data: existingData, error: existingDataError } = await supabase
+        .from("profile")
+        .select("email")
+        .eq("email", email)
+        .single();
+
+      if (existingData === null) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${redirectTo}/auth/survey`,
+            data: {
+              display_name: name,
+            },
           },
-        },
-      });
-
-      localStorage.setItem("region", JSON.stringify(selectedRegion));
-
-      if (error) {
-        console.log("Error in handleSignUp: ", error.message);
-        toast.error(error.message || "Signup failed. Please try again.");
-        setLoading(false);
-        return;
+        });
+        if (error) {
+          console.log("Error in handleSignUp: ", error);
+          toast.error(error || "Signup failed. Please try again.");
+          setLoading(false);
+          return;
+        } else {
+          toast("Please check your email for a verification link.");
+          localStorage.setItem("email", JSON.stringify(email));
+          localStorage.setItem("region", JSON.stringify(selectedRegion));
+          navigate("/auth/check");
+        }
       } else {
-        toast("Please check your email for a verification link.");
-        navigate("/auth/check");
+        console.log(existingDataError);
+        toast.error("User already exists.");
+        return;
       }
     } finally {
       setLoading(false);

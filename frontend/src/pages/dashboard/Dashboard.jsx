@@ -17,26 +17,32 @@ const Dashboard = () => {
   useEffect(() => {
     const handleAuth = async () => {
       try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
-        if (error) {
-          console.log("Error in dashboard page auth: ", error);
-        } else {
-          setLoggedUser(user);
-          const { data, error: profileError } = await supabase
-            .from("profile")
-            .select("*")
-            .eq("user_id", user?.id);
-
-          if (profileError) {
-            console.log("Error fetching profile:", profileError);
-          } else {
-            console.log(data[0]);
-            setUserProfile(data[0]);
-          }
+        const { data, error: authError } = await supabase.auth.getUser();
+        if (authError) {
+          console.error("Error fetching authenticated user:", authError);
+          return;
         }
+        const user = data?.user;
+        if (!user) {
+          console.warn("No authenticated user found.");
+          return;
+        }
+        setLoggedUser(user);
+
+        const { data: profileData, error: profileError } = await supabase
+          .from("profile")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+          return;
+        }
+        setUserProfile(profileData);
+        console.log("Profile fetched successfully:", profileData);
+      } catch (err) {
+        console.error("Unexpected error in handleAuth:", err);
       } finally {
         setIsLoading(false);
       }

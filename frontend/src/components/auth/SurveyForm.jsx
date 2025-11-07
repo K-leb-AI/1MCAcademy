@@ -212,68 +212,85 @@ export default function RecommendationSurvey() {
   useEffect(() => {
     const handleAuth = async () => {
       try {
-        const code = searchParams.get("code");
-        if (code) {
-          await supabase.auth.exchangeCodeForSession(code);
-        }
-
         const {
           data: { user },
-          error,
+          error: userError,
         } = await supabase.auth.getUser();
 
-        if (error) {
-          console.error("Error in Survey auth:", error.message);
-          return;
-        }
-
-        if (!user) {
-          console.log("Unauthenticated");
+        if (userError) {
+          console.error("Error fetching user:", userError.message);
+          toast.error("Authentication error. Please log in again.");
           navigate("/");
           return;
         }
 
+        if (!user) {
+          console.warn("Unauthenticated user detected");
+          navigate("/");
+          return;
+        }
+
+        // 3️⃣ Save user to state
         setLoggedUser(user);
-      } catch (error) {
-        console.error("Auth handling error:", error.message);
+        console.log("Authenticated user:", user.email);
+      } catch (err) {
+        console.error("Unexpected auth error:", err);
+        toast.error("An unexpected error occurred.");
       }
     };
 
     handleAuth();
   }, [navigate, searchParams]);
 
-  // === Handle Enroll ===
   const handleEnroll = async (recommendation) => {
-    if (!loggedUser?.id) {
-      toast.error("Please log in again.");
-      return;
-    }
-
-    let region = localStorage.getItem("region");
     try {
-      region = JSON.parse(region);
-    } catch {
-      region = null;
+      if (!loggedUser?.id) {
+        toast.error("Please log in again.");
+        return;
+      }
+
+      if (!recommendation?.level || !recommendation?.skill_path) {
+        toast.error("Invalid recommendation data.");
+        return;
+      }
+
+      let region = null;
+      try {
+        const regionData = localStorage.getItem("region");
+        if (regionData) region = JSON.parse(regionData);
+      } catch (err) {
+        console.warn("Failed to parse region data:", err);
+      }
+
+      // Insert new profile data
+      const { data, error } = await supabase
+        .from("profile")
+        .insert([
+          {
+            experience: recommendation.level,
+            skill_path: recommendation.skill_path,
+            user_id: loggedUser.id,
+            region,
+            email: loggedUser.email,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Profile insert error:", error);
+        toast.error("Something went wrong. Please try again.");
+        return;
+      }
+
+      toast.success(
+        `Welcome, ${loggedUser.user_metadata?.display_name || "Learner"}!`
+      );
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Unexpected error during enrollment:", err);
+      toast.error("An unexpected error occurred. Please try again.");
     }
-
-    const { data, error } = await supabase
-      .from("profile")
-      .insert({
-        experience: recommendation.level,
-        skill_path: recommendation.skill_path,
-        user_id: loggedUser.id,
-        region,
-      })
-      .select();
-
-    if (error) {
-      console.error("Profile insert error:", error.message);
-      toast.error("Something went wrong. Please try again.");
-      return;
-    }
-
-    toast.success(`Welcome, ${loggedUser.user_metadata.display_name}!`);
-    navigate("/dashboard");
   };
 
   // === Step navigation ===

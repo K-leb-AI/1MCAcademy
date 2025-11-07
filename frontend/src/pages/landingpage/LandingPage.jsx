@@ -70,8 +70,8 @@ export const LandingPage = () => {
               mobileMenuOpen ? "flex" : "hidden"
             } md:flex flex-col md:flex-row md:items-center gap-8 absolute md:static top-16 left-0 right-0 md:top-auto p-6 md:p-0 bg-background md:bg-transparent md:border-0 border-b border-border`}
           >
-            {navLinks.map((link) => (
-              <a href={link.url} className="text-sm">
+            {navLinks.map((link, index) => (
+              <a href={link.url} key={index} className="text-sm">
                 {link.link}
               </a>
             ))}
