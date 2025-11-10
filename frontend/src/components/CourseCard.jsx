@@ -70,7 +70,7 @@ const CourseCard = ({ course, onClick }) => {
             {course.level}
           </p>
         </div>
-        <p className="text-xs text-foreground/50 mt-2 border-l border-foreground/10 pl-4 leading-4.5 py-1">
+        <div className="text-xs text-foreground/50 mt-2 border-l border-foreground/10 pl-4 leading-4.5 py-1">
           {course.description.length >= 130 ? (
             <div className="flex">
               <ReactMarkdown>
@@ -80,7 +80,7 @@ const CourseCard = ({ course, onClick }) => {
           ) : (
             <ReactMarkdown>course.description</ReactMarkdown>
           )}
-        </p>
+        </div>
         <div className="text-foreground/50 text-xs mt-3 flex gap-2">
           <IoPerson size={12} />{" "}
           <span>Instructor: {course.instructor?.name}</span>

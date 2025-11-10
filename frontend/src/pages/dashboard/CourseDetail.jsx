@@ -14,58 +14,97 @@ const CourseDetail = () => {
   const navigate = useNavigate();
 
   const handleEnroll = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("user_courses")
-        .insert(`course_id: ${course.id}, user_id: ${loggedUser.id}`)
-        .eq("id", courseId);
+    setIsLoading(true);
+    if (course.isEnrolled) navigate(`/dashboard/courses/${courseId}/1`);
+    else {
+      try {
+        const { data, error } = await supabase.from("user_courses").insert([
+          {
+            course_id: course.id,
+            user_id: loggedUser.id,
+          },
+        ]);
 
-      if (error) {
-        console.log("Error Fetching Course: ", error);
-      } else {
-        setCourse(data[0]);
-        console.log(course);
+        if (error) {
+          console.error("Error enrolling in course:", error.message);
+          toast.error("Could not enroll in the course. Please try again.");
+          return;
+        }
+
+        console.log("Enrollment successful:", data);
+        toast.success("Successfully enrolled!");
+        setCourse((prev) => ({ ...prev, isEnrolled: true }));
+
+        navigate(`/dashboard/courses/${courseId}/1`);
+      } catch (err) {
+        console.error("Unexpected error enrolling:", err);
+        toast.error("An unexpected error occurred.");
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
     }
   };
+
   useEffect(() => {
     const handleCourseFetch = async () => {
       try {
-        const { data, error } = await supabase
-          .from("course")
-          .select("*, instructor: instructor_id (name, bio)")
-          .eq("id", courseId);
-
         const {
           data: { user },
           error: authError,
         } = await supabase.auth.getUser();
 
+        if (authError) {
+          console.error("Auth Error:", authError);
+          toast.error("Authentication failed. Please log in again.");
+          navigate("/");
+          return;
+        }
         if (!user) {
           console.log("Unauthenticated");
           navigate("/");
+          return;
         }
-
-        if (error || authError) {
-          toast("Error Fetching Course");
-          console.log("Error Fetching Course: ", error || authError);
-          navigate(-1);
-        } else {
-          setCourse(data[0]);
-          setLoggedUser(user);
-          console.log(course);
-        }
-
         setLoggedUser(user);
+
+        const { data: courseData, error: courseError } = await supabase
+          .from("course")
+          .select("*, instructor: instructor_id (name, bio)")
+          .eq("id", courseId)
+          .single();
+
+        if (courseError) {
+          console.error("Error fetching course:", courseError);
+          toast.error("Error fetching course details.");
+          navigate(-1);
+          return;
+        }
+
+        const { data: userCourse, error: userCourseError } = await supabase
+          .from("user_courses")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("course_id", courseId)
+          .maybeSingle();
+
+        if (userCourseError) {
+          console.error("Error fetching user-course:", userCourseError);
+        }
+
+        if (userCourse?.status === "enrolled")
+          setCourse({ ...courseData, isEnrolled: true });
+        else setCourse({ ...courseData, isEnrolled: false });
+
+        console.log("Fetched Course:", course);
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        toast.error("Something went wrong while loading the course.");
       } finally {
         setIsLoading(false);
       }
     };
 
     handleCourseFetch();
-  }, []);
+  }, [courseId, navigate]);
 
   if (isLoading)
     return (
@@ -85,7 +124,7 @@ const CourseDetail = () => {
         <img
           src={course.thumbnail_url}
           alt=""
-          className="border border-border rounded-tl-2xl rounded-bl-2xl md:rounded-bl-none md:rounded-tr-2xl w-1/2 md:w-full h-full md:h-3/5 object-center object-contain"
+          className="border border-border rounded-tl-2xl rounded-bl-2xl md:rounded-bl-none md:rounded-tr-2xl w-1/2 md:w-full h-full md:h-3/5 object-center object-cover"
         />
         <div className="p-4 md:h-2/5 h-full flex flex-col justify-between w-full">
           <div className="">
@@ -119,9 +158,9 @@ const CourseDetail = () => {
             </a>
             <button
               className="py-2 flex items-center justify-center text-xs bg-primary hover:bg-primary/80 text-white w-full rounded-xl mt-2 cursor-pointer duration-300"
-              // onClick={()}
+              onClick={handleEnroll}
             >
-              Enroll Now
+              {course.isEnrolled ? "Go to course" : "Enroll Now"}
             </button>
           </div>
         </div>
@@ -136,8 +175,8 @@ const CourseDetail = () => {
           <p className="text-2xl font-bold text-primary">What you'll learn</p>
           <div className="mt-5 text-justify text-foreground/50 leading-8 pl-4">
             <ol>
-              {course.learning_plan.split(".").map((point) => (
-                <li className="list-disc">
+              {course.learning_plan.split(".").map((point, index) => (
+                <li className="list-disc" key={index}>
                   <ReactMarkdown>{point}</ReactMarkdown>
                 </li>
               ))}
@@ -148,8 +187,8 @@ const CourseDetail = () => {
         <p className="text-2xl font-bold mt-8">Requirements</p>
         <div className="mt-5 text-justify text-foreground/50 leading-6 pl-4">
           <ol>
-            {course.requirements.split(".").map((point) => (
-              <li className="list-disc">
+            {course.requirements.split(".").map((point, index) => (
+              <li className="list-disc" key={index}>
                 <ReactMarkdown>{point}</ReactMarkdown>
               </li>
             ))}
@@ -160,8 +199,8 @@ const CourseDetail = () => {
         </p>
         <div className="mt-5 text-justify text-foreground/50 leading-6 pl-4">
           <ol>
-            {course.learning_outcomes.split(".").map((point) => (
-              <li className="list-disc">
+            {course.learning_outcomes.split(".").map((point, index) => (
+              <li className="list-disc" key={index}>
                 <ReactMarkdown>{point}</ReactMarkdown>
               </li>
             ))}

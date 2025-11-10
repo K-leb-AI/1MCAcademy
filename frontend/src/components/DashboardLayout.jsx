@@ -19,28 +19,14 @@ export default function Page() {
   const location = useLocation();
   const navigate = useNavigate();
   const segments = location.pathname.split("/").filter((seg) => seg);
-  const [courseTitle, setCourseTitle] = useState();
-
-  const formatSegment = (seg, prev) => {
-    checkSegment(seg, prev);
-    let subseg = prev === "courses" ? courseTitle : seg.split("-").join(" ");
-    return subseg;
-  };
 
   const [loggedUser, setLoggedUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [courseTitle, setCourseTitle] = useState(null);
 
-  const checkSegment = async (seg, prev) => {
-    if (prev === "courses") {
-      const { data: fetchedTitle, error: fetchCourseError } = await supabase
-        .from("course")
-        .select("title")
-        .eq("id", seg);
-
-      if (fetchCourseError === null) {
-        setCourseTitle(fetchedTitle[0].title);
-      }
-    }
+  const formatSegment = (seg) => {
+    const subseg = seg.split("-").join(" ");
+    return subseg.charAt(0).toUpperCase() + subseg.slice(1);
   };
 
   useEffect(() => {
@@ -54,21 +40,67 @@ export default function Page() {
         if (!user) {
           console.log("Unauthenticated");
           navigate("/");
+          return;
         }
 
         if (error) {
-          console.log("Error in Dashboard auth: ", error);
+          console.error("Error in Dashboard auth:", error);
           return;
         }
+
         setLoggedUser(user);
+      } catch (error) {
+        console.error("Auth error:", error.message);
       } finally {
         setIsLoading(false);
       }
     };
 
     handleAuth();
-  }, []); // ✅ add dependency array
+  }, [navigate]);
 
+  useEffect(() => {
+    const fetchCourseTitle = async () => {
+      const courseIndex = segments.indexOf("courses");
+      if (courseIndex === -1) {
+        setCourseTitle(null);
+        return;
+      }
+
+      const courseId = segments[courseIndex + 1];
+      if (!courseId) {
+        setCourseTitle(null);
+        return;
+      }
+
+      // Check sessionStorage first
+      const cachedTitle = sessionStorage.getItem(`course-title-${courseId}`);
+      if (cachedTitle) {
+        setCourseTitle(cachedTitle);
+        return;
+      }
+
+      // Fetch from Supabase if not cached
+      const { data, error } = await supabase
+        .from("course")
+        .select("title")
+        .eq("id", courseId)
+        .single();
+
+      if (!error && data) {
+        setCourseTitle(data.title);
+        sessionStorage.setItem(`course-title-${courseId}`, data.title);
+      } else {
+        console.warn("Failed to fetch course title:", error?.message);
+        setCourseTitle(null);
+      }
+    };
+
+    fetchCourseTitle();
+  }, [segments]);
+
+  // ---------------------------------------------
+  // 🌀 Loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
@@ -78,10 +110,10 @@ export default function Page() {
     );
   }
 
-  if (!loggedUser) {
-    return null;
-  }
+  if (!loggedUser) return null;
 
+  // ---------------------------------------------
+  // 🧭 Render
   return (
     <SidebarProvider defaultOpen={true} style={{ "--sidebar-width": "19rem" }}>
       <AppSidebar />
@@ -99,6 +131,15 @@ export default function Page() {
                 const path = "/" + segments.slice(0, index + 1).join("/");
                 const isLast = index === segments.length - 1;
 
+                // Check if this segment is the course ID
+                const courseIndex = segments.indexOf("courses");
+                const courseId = segments[courseIndex + 1];
+                const isCourseIdSegment = segment === courseId && courseTitle;
+
+                const label = isCourseIdSegment
+                  ? courseTitle
+                  : formatSegment(segment);
+
                 return (
                   <BreadcrumbItem
                     className="hidden md:block capitalize"
@@ -107,14 +148,12 @@ export default function Page() {
                     {!isLast ? (
                       <div className="flex items-center gap-1">
                         <BreadcrumbLink asChild>
-                          <Link to={path}>{formatSegment(segment)}</Link>
+                          <Link to={path}>{label}</Link>
                         </BreadcrumbLink>
                         <ChevronRight className="hidden md:block" size={14} />
                       </div>
                     ) : (
-                      <BreadcrumbPage>
-                        {formatSegment(segment, segments[index - 1])}
-                      </BreadcrumbPage>
+                      <BreadcrumbPage>{label}</BreadcrumbPage>
                     )}
                   </BreadcrumbItem>
                 );

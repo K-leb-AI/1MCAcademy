@@ -8,6 +8,7 @@ import { ChartAreaDefault } from "../../components/chart";
 import { CarouselSpacing } from "../../components/Carousel";
 import { supabase } from "../../supabaseClient";
 import { PiSpinner } from "react-icons/pi";
+import { updateUserStreak } from "../../lib/streak";
 
 const Dashboard = () => {
   const [loggedUser, setLoggedUser] = useState(null);
@@ -31,9 +32,14 @@ const Dashboard = () => {
 
         const { data: profileData, error: profileError } = await supabase
           .from("profile")
+          // .select("*, user_courses: user_id(last_lesson_id)")
           .select("*")
           .eq("user_id", user.id)
           .single();
+
+        updateUserStreak(user.id);
+
+        // console.log(profileData);
 
         if (profileError) {
           console.error("Error fetching profile:", profileError);
@@ -71,9 +77,9 @@ const Dashboard = () => {
           Welcome back, {loggedUser.user_metadata.display_name.split(" ")[0]}
         </div>
         <div className="flex items-center mt-4 mb-8 gap-3">
-          <div className="bg-accent text-foreground/50 flex h-8 items-center justify-center rounded-lg p-2 gap-1">
+          <div className="bg-accent text-foreground/50 flex h-8 items-center justify-center rounded-lg p-2 gap-1 animate-pulse">
             <HiLightningBolt size={17} />
-            <p>1</p>
+            <p>{userProfile.current_streak}</p>
           </div>
           <div className="bg-accent text-foreground/50 flex aspect-square size-8 items-center justify-center rounded-lg p-2">
             <Waypoints size={17} />

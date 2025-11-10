@@ -15,6 +15,7 @@ import Survey from "../pages/auth/Survey.jsx";
 import LandingPage from "../pages/landingpage/LandingPage.jsx";
 import CourseDetail from "../pages/dashboard/CourseDetail.jsx";
 import NotFound from "../components/NotFound.jsx";
+import CourseContentPage from "../pages/dashboard/CourseContentPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
           {
             path: "/dashboard/courses/:courseId",
             element: <CourseDetail />,
+          },
+          {
+            path: "/dashboard/courses/:courseId/:lessonId",
+            element: <CourseContentPage />,
           },
           {
             path: "/dashboard/my-learning",
