@@ -3,14 +3,16 @@ import CourseCard from "../../components/CourseCard";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "../../supabaseClient";
-import { PiSpinner } from "react-icons/pi";
+import Loading from "../../components/Loading";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../utils/UserProvider";
 
 const Courses = () => {
   const [courseList, setCourseList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredSearch, setFilteredSearch] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFetching, setIsFetching] = useState(true);
+  const { isLoading } = useUser();
   const navigate = useNavigate();
 
   const handleClick = (courseId) => {
@@ -50,20 +52,16 @@ const Courses = () => {
       } catch (err) {
         console.error("Unexpected error:", err);
       } finally {
-        setIsLoading(false);
+        setIsFetching(false);
       }
     };
 
     fetchCourses();
   }, []);
 
-  if (isLoading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
-        <PiSpinner className="animate-spin" size={40} />
-        <p className="mt-4 text-foreground">Loading...</p>
-      </div>
-    );
+  if (isLoading || isFetching) {
+    return <Loading />;
+  }
 
   return (
     <div className="mb-5 px-4 md:px-10">

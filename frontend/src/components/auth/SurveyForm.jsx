@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { CiRedo } from "react-icons/ci";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { supabase } from "../../supabaseClient";
 import toast from "react-hot-toast";
+import { useUser } from "../../utils/UserProvider";
+import Loading from "../Loading";
 
 // === CLASS OPTIONS ===
 const classes = [
@@ -206,41 +208,51 @@ export default function RecommendationSurvey() {
   const [interest, setInterest] = useState(null);
   const [goal, setGoal] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
-  const [loggedUser, setLoggedUser] = useState(null);
+  // const [loggedUser, setLoggedUser] = useState(null);
+
+  const { loggedUser, userProfile, isLoading } = useUser();
+
+  if (userProfile && loggedUser) {
+    return <Navigate to="/dashboard" />;
+  }
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   // === Handle Supabase Auth ===
-  useEffect(() => {
-    const handleAuth = async () => {
-      try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
+  // useEffect(() => {
+  //   const handleAuth = async () => {
+  //     try {
+  //       const {
+  //         data: { user },
+  //         error: userError,
+  //       } = await supabase.auth.getUser();
 
-        if (userError) {
-          console.error("Error fetching user:", userError.message);
-          toast.error("Authentication error. Please log in again.");
-          navigate("/");
-          return;
-        }
+  //       if (userError) {
+  //         console.error("Error fetching user:", userError.message);
+  //         toast.error("Authentication error. Please log in again.");
+  //         navigate("/");
+  //         return;
+  //       }
 
-        if (!user) {
-          console.warn("Unauthenticated user detected");
-          navigate("/");
-          return;
-        }
+  //       if (!user) {
+  //         console.warn("Unauthenticated user detected");
+  //         navigate("/");
+  //         return;
+  //       }
 
-        // 3️⃣ Save user to state
-        setLoggedUser(user);
-        console.log("Authenticated user:", user.email);
-      } catch (err) {
-        console.error("Unexpected auth error:", err);
-        toast.error("An unexpected error occurred.");
-      }
-    };
+  //       // 3️⃣ Save user to state
+  //       setLoggedUser(user);
+  //       console.log("Authenticated user:", user.email);
+  //     } catch (err) {
+  //       console.error("Unexpected auth error:", err);
+  //       toast.error("An unexpected error occurred.");
+  //     }
+  //   };
 
-    handleAuth();
-  }, [navigate, searchParams]);
+  //   handleAuth();
+  // }, [navigate, searchParams]);
 
   const handleEnroll = async (recommendation) => {
     try {

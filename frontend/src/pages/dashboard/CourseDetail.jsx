@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
-import { PiSpinner } from "react-icons/pi";
+import Loading from "../../components/Loading";
 import ReactMarkdown from "react-markdown";
 import { Star, Radio } from "lucide-react";
 import toast from "react-hot-toast";
+import { useUser } from "../../utils/UserProvider";
 
 const CourseDetail = () => {
   const courseId = useLocation().pathname.split("/").pop();
   const [course, setCourse] = useState();
-  const [isLoading, setIsLoading] = useState(true);
-  const [loggedUser, setLoggedUser] = useState();
+  const [isFetching, setIsFetching] = useState(true);
+  const { loggedUser, isLoading } = useUser();
   const navigate = useNavigate();
 
   const handleEnroll = async () => {
-    setIsLoading(true);
-    if (course.isEnrolled) navigate(`/dashboard/courses/${courseId}/1`);
+    setIsFetching(true);
+    if (course.isEnrolled)
+      navigate(`/dashboard/courses/${courseId}/${course.last_lesson_id}`);
     else {
       try {
         const { data, error } = await supabase.from("user_courses").insert([
@@ -40,7 +42,7 @@ const CourseDetail = () => {
         console.error("Unexpected error enrolling:", err);
         toast.error("An unexpected error occurred.");
       } finally {
-        setIsLoading(false);
+        setIsFetching(false);
       }
     }
   };
@@ -48,24 +50,6 @@ const CourseDetail = () => {
   useEffect(() => {
     const handleCourseFetch = async () => {
       try {
-        const {
-          data: { user },
-          error: authError,
-        } = await supabase.auth.getUser();
-
-        if (authError) {
-          console.error("Auth Error:", authError);
-          toast.error("Authentication failed. Please log in again.");
-          navigate("/");
-          return;
-        }
-        if (!user) {
-          console.log("Unauthenticated");
-          navigate("/");
-          return;
-        }
-        setLoggedUser(user);
-
         const { data: courseData, error: courseError } = await supabase
           .from("course")
           .select("*, instructor: instructor_id (name, bio)")
@@ -82,7 +66,7 @@ const CourseDetail = () => {
         const { data: userCourse, error: userCourseError } = await supabase
           .from("user_courses")
           .select("*")
-          .eq("user_id", user.id)
+          .eq("user_id", loggedUser.id)
           .eq("course_id", courseId)
           .maybeSingle();
 
@@ -91,28 +75,29 @@ const CourseDetail = () => {
         }
 
         if (userCourse?.status === "enrolled")
-          setCourse({ ...courseData, isEnrolled: true });
+          setCourse({
+            ...courseData,
+            isEnrolled: true,
+            last_lesson_id: userCourse.last_lesson_id,
+          });
         else setCourse({ ...courseData, isEnrolled: false });
 
-        console.log("Fetched Course:", course);
+        console.log("Last lesson:", course);
       } catch (err) {
         console.error("Unexpected error:", err);
         toast.error("Something went wrong while loading the course.");
       } finally {
-        setIsLoading(false);
+        setIsFetching(false);
+        console.log(isLoading, isFetching);
       }
     };
 
     handleCourseFetch();
   }, [courseId, navigate]);
 
-  if (isLoading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
-        <PiSpinner className="animate-spin" size={40} />
-        <p className="mt-4 text-foreground">Loading...</p>
-      </div>
-    );
+  if (isLoading || isFetching) {
+    return <Loading />;
+  }
 
   return (
     <div className="px-4 md:px-5 lg:px-35 mt-10 flex md:flex-row flex-col md:gap-5 lg:gap-15 gap-2">

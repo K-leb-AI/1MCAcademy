@@ -5,6 +5,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ChevronRight, Plus } from "lucide-react";
+import Loading from "../../components/Loading";
+import { useUser } from "../../utils/UserProvider";
 
 const SkillPath = () => {
   const skillPaths = [
@@ -212,6 +214,12 @@ const SkillPath = () => {
       ],
     },
   ];
+
+  const { isLoading, userProfile } = useUser();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="mb-5 px-4 md:px-10">

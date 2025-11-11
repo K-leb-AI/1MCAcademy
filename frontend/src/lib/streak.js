@@ -26,9 +26,6 @@ export async function updateUserStreak(userId) {
     else if (diff > 1) newStreak = 1;
     // diff === 0 → already logged in today → no change
   }
-
-  console.log(today);
-
   // Update DB
   const { error: updateError } = await supabase
     .from("profile")

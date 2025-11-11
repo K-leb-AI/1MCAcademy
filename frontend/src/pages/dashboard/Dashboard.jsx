@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Waypoints, History } from "lucide-react";
 import { HiLightningBolt } from "react-icons/hi";
 import { IoPerson } from "react-icons/io5";
@@ -6,69 +6,19 @@ import Calendar20 from "../../components/calendar-20";
 import { RiProgress8Fill } from "react-icons/ri";
 import { ChartAreaDefault } from "../../components/chart";
 import { CarouselSpacing } from "../../components/Carousel";
-import { supabase } from "../../supabaseClient";
-import { PiSpinner } from "react-icons/pi";
-import { updateUserStreak } from "../../lib/streak";
+import Loading from "../../components/Loading";
+import { useUser } from "../../utils/UserProvider";
 
 const Dashboard = () => {
-  const [loggedUser, setLoggedUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const handleAuth = async () => {
-      try {
-        const { data, error: authError } = await supabase.auth.getUser();
-        if (authError) {
-          console.error("Error fetching authenticated user:", authError);
-          return;
-        }
-        const user = data?.user;
-        if (!user) {
-          console.warn("No authenticated user found.");
-          return;
-        }
-        setLoggedUser(user);
-
-        const { data: profileData, error: profileError } = await supabase
-          .from("profile")
-          // .select("*, user_courses: user_id(last_lesson_id)")
-          .select("*")
-          .eq("user_id", user.id)
-          .single();
-
-        updateUserStreak(user.id);
-
-        // console.log(profileData);
-
-        if (profileError) {
-          console.error("Error fetching profile:", profileError);
-          return;
-        }
-        setUserProfile(profileData);
-        console.log("Profile fetched successfully:", profileData);
-      } catch (err) {
-        console.error("Unexpected error in handleAuth:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    handleAuth();
-  }, []);
+  const { loggedUser, userProfile, isLoading } = useUser();
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
-        <PiSpinner className="animate-spin" size={40} />
-        <p className="mt-4 text-foreground">Loading...</p>
-      </div>
-    );
+    return <Loading />;
   }
-
-  if (!userProfile && !loggedUser) {
+  if (!userProfile || !loggedUser) {
     return null;
   }
+  console.log(userProfile);
   return (
     <div className="mb-5 px-4 md:px-10">
       <div className="lg:flex items-center justify-between">

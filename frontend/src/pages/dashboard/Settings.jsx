@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, Bell, HelpCircle, Lock } from "lucide-react";
+import Loading from "../../components/Loading";
+import { useUser } from "../../utils/UserProvider";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("Profile");
@@ -11,7 +13,12 @@ export default function SettingsPage() {
     { name: "Help & Support", icon: <HelpCircle size={16} /> },
   ];
 
+  const { isLoading } = useUser();
+
   const renderContent = () => {
+    if (isLoading) {
+      return <Loading />;
+    }
     switch (activeTab) {
       case "Profile":
         return (

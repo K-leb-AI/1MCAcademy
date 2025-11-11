@@ -3,7 +3,9 @@ import { AppSidebar } from "./app-sidebar";
 import { ModeToggle } from "../components/ThemeToggle";
 import { supabase } from "../supabaseClient";
 import { useNavigate, Outlet, useLocation, Link } from "react-router-dom";
-import { PiSpinner } from "react-icons/pi";
+import ProfileButton from "../components/ProfileButton";
+import { useUser } from "../utils/UserProvider";
+import Loading from "./Loading";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,44 +22,46 @@ export default function Page() {
   const navigate = useNavigate();
   const segments = location.pathname.split("/").filter((seg) => seg);
 
-  const [loggedUser, setLoggedUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [loggedUser, setLoggedUser] = useState(null);
+  // const [isLoading, setIsLoading] = useState(true);
   const [courseTitle, setCourseTitle] = useState(null);
+
+  const { loggedUser, isLoading } = useUser();
 
   const formatSegment = (seg) => {
     const subseg = seg.split("-").join(" ");
     return subseg.charAt(0).toUpperCase() + subseg.slice(1);
   };
 
-  useEffect(() => {
-    const handleAuth = async () => {
-      try {
-        const {
-          data: { user },
-          error,
-        } = await supabase.auth.getUser();
+  // useEffect(() => {
+  //   const handleAuth = async () => {
+  //     try {
+  //       const {
+  //         data: { user },
+  //         error,
+  //       } = await supabase.auth.getUser();
 
-        if (!user) {
-          console.log("Unauthenticated");
-          navigate("/");
-          return;
-        }
+  //       if (!user) {
+  //         console.log("Unauthenticated");
+  //         navigate("/");
+  //         return;
+  //       }
 
-        if (error) {
-          console.error("Error in Dashboard auth:", error);
-          return;
-        }
+  //       if (error) {
+  //         console.error("Error in Dashboard auth:", error);
+  //         return;
+  //       }
 
-        setLoggedUser(user);
-      } catch (error) {
-        console.error("Auth error:", error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  //       setLoggedUser(user);
+  //     } catch (error) {
+  //       console.error("Auth error:", error.message);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    handleAuth();
-  }, [navigate]);
+  //   handleAuth();
+  // }, [navigate]);
 
   useEffect(() => {
     const fetchCourseTitle = async () => {
@@ -99,25 +103,17 @@ export default function Page() {
     fetchCourseTitle();
   }, [segments]);
 
-  // ---------------------------------------------
-  // 🌀 Loading state
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background flex-col gap-3">
-        <PiSpinner className="animate-spin" size={40} />
-        <p className="mt-4 text-foreground">Loading...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!loggedUser) return null;
 
-  // ---------------------------------------------
-  // 🧭 Render
   return (
     <SidebarProvider defaultOpen={true} style={{ "--sidebar-width": "19rem" }}>
       <AppSidebar />
       <SidebarInset className="text-sm">
+        <ProfileButton />
         <ModeToggle />
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1 hover:bg-sidebar-accent z-20" />

@@ -1,7 +1,8 @@
 import { NotificationSidebar } from "../../components/notification-sidebar";
 import { SidebarProvider } from "../../components/ui/notification-sidebar";
 import { Outlet } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import Loading from "../../components/Loading";
+import { useUser } from "../../utils/UserProvider";
 
 export default function Page() {
   const data = {
@@ -154,6 +155,12 @@ Sophia`,
       },
     ],
   };
+
+  const { isLoading } = useUser();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <SidebarProvider

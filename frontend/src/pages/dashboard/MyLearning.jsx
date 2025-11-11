@@ -1,19 +1,21 @@
 import React from "react";
 import { HiLightningBolt } from "react-icons/hi";
-import { AlarmCheck, Badge } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// import { AlarmCheck, Badge } from "lucide-react";
+// import { Button } from "@/components/ui/button";
 import { CarouselSize } from "../../components/LearningCarousel";
 import { CompletedCarouselSize } from "../../components/LearningCarouselCompleted";
 import BadgeCard from "../../components/BadgeCard";
+import Loading from "../../components/Loading";
 import Calendar20 from "../../components/calendar-20";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useUser } from "../../utils/UserProvider";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
 
 const MyLearning = () => {
   const startedCoursesData = [
@@ -237,6 +239,12 @@ const MyLearning = () => {
       isLocked: true,
     },
   ];
+
+  const { isLoading, userProfile } = useUser();
+
+  if (isLoading) {
+    return <Loading />;
+  }
   return (
     <div className="mb-5 px-4 md:px-10">
       {/* <div className="flex flex-col gap-6"> */}
