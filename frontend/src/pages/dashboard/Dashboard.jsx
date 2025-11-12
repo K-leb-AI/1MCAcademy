@@ -9,8 +9,6 @@ import { CarouselSpacing } from "../../components/Carousel";
 import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
 import { supabase } from "@/supabaseClient";
-import upcoming from "../../assets/upcoming.png";
-import studyIcon from "../../assets/study.svg";
 
 const Dashboard = () => {
   const { loggedUser, userProfile, isLoading } = useUser();
@@ -103,7 +101,7 @@ const Dashboard = () => {
         </div>
         <div className="w-full lg:w-1/2 h-full relative">
           <img
-            src={upcoming}
+            src="upcoming.png"
             className="object-center object-cover w-full h-full"
           />
           <div className="flex lg:hidden absolute bg-linear-to-t from-[#000000b6] to-[#00000000] w-full h-60 bottom-0 flex-col justify-end px-8 py-6">
@@ -111,7 +109,7 @@ const Dashboard = () => {
               <Bell size={12} />
               <p className="text-sm uppercase font-medium">Coming Soon</p>
             </div>
-            <p className="text-2xl font-bold mb-3">
+            <p className="text-2xl font-bold mb-3 text-white">
               Introduction to 3D Modeling and Printing
             </p>
             <p className="text-sm text-white/80">
@@ -125,7 +123,7 @@ const Dashboard = () => {
       <div className="grid auto-rows-min gap-4 grid-cols-1 lg:grid-cols-2 lg:grid-rows-4">
         {lastCourse === undefined ? (
           <div className="bg-sidebar col-span-1 lg:row-span-1 lg:col-span-1 rounded-xl py-4 px-8 flex items-center justify-center flex-col gap-3 relative">
-            <img src={studyIcon} alt="" className="w-1/4" />
+            <img src="study.svg" alt="" className="w-1/4" />
             <p className="font-medium text-xl opacity-50">
               Your journey awaits!
             </p>
