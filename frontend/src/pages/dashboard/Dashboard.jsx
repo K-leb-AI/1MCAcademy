@@ -1,5 +1,5 @@
-import React from "react";
-import { Waypoints, History } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Waypoints, History, Bell } from "lucide-react";
 import { HiLightningBolt } from "react-icons/hi";
 import { IoPerson } from "react-icons/io5";
 import Calendar20 from "../../components/calendar-20";
@@ -8,19 +8,59 @@ import { ChartAreaDefault } from "../../components/chart";
 import { CarouselSpacing } from "../../components/Carousel";
 import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
+import { supabase } from "@/supabaseClient";
+import upcoming from "../../assets/upcoming.png";
+import studyIcon from "../../assets/study.svg";
 
 const Dashboard = () => {
   const { loggedUser, userProfile, isLoading } = useUser();
+  const [lastCourse, setLastCourse] = useState();
+  const [isFetching, setIsFetching] = useState(true);
 
-  if (isLoading) {
+  useEffect(() => {
+    const fetchLastCourse = async () => {
+      try {
+        const { data: userCoursesData, error: userCoursesError } =
+          await supabase
+            .from("user_courses")
+            .select(
+              "progress, lessons(title), course(title, level, instructor_id)"
+            )
+            .eq("id", userProfile.last_course_id)
+            .eq("user_id", loggedUser.id)
+            .single();
+
+        const { data: instructorData, error: instructorError } = await supabase
+          .from("instructor")
+          .select("name")
+          .eq("id", userCoursesData.course.instructor_id)
+          .single();
+
+        if (instructorError || userCoursesError)
+          throw Error(courseError || userCoursesError);
+
+        setLastCourse({
+          ...userCoursesData,
+          ...instructorData,
+        });
+      } catch (error) {
+        console.log("Error fetching latest course: ", error);
+      } finally {
+        setIsFetching(false);
+      }
+    };
+    fetchLastCourse();
+  }, []);
+
+  if (isLoading || isFetching) {
     return <Loading />;
   }
   if (!userProfile || !loggedUser) {
     return null;
   }
-  console.log(userProfile);
+
   return (
-    <div className="mb-5 px-4 md:px-10">
+    <div className="mb-5 mt-12 px-4 md:px-10">
       <div className="lg:flex items-center justify-between">
         <div className="mt-4 lg:mb-8 mb-2 font-bold text-2xl flex gap-2 items-center">
           <div className="w-8 aspect-square rounded-full bg-accent"></div>
@@ -44,62 +84,107 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="grid auto-rows-min gap-4 grid-cols-1 lg:grid-cols-2 lg:grid-rows-4">
-        <div className="bg-sidebar col-span-1 lg:row-span-1 lg:col-span-1 rounded-xl py-4 px-8">
-          <div className="text-foreground/50 mb-4 lg:mb-8">
-            Current Progress
-          </div>
-          {/* <img
-              src="book.png"
-              alt=""
-              className="hidden lg:block lg:size-70 absolute top-0 lg:-top-15 right-0"
-            /> */}
-          <div className="flex flex-col lg:flex-row lg:justify-between">
-            <div className="">
-              <div className="flex gap-4 items-center-justify-center">
-                <p className="font-bold text-foreground text-2xl capitalize">
-                  {userProfile.skill_path}
-                </p>
-                <p className="px-3 bg-primary/5 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center">
-                  {userProfile.experience}
-                </p>
-              </div>
-              <div className="text-foreground/50 mt-1 flex gap-2">
-                <IoPerson size={12} />{" "}
-                <span>Instructor: Michael Osei Frimpong</span>
-              </div>
-              <div className="mt-1 flex items-center gap-2 text-foreground/50">
-                <History size={12} />
-                <span>Last Lesson: </span>
-                <span>HTML Lesson 5</span>
-              </div>
+      <div className="w-full h-[55vh] rounded-xl mb-4 flex overflow-clip">
+        <div className="hidden lg:block w-1/2 px-16 py-20 bg-linear-to-r from-[#214098] to-[#3a61cb]">
+          <div className="bg-white rounded-xl shadow-lg shadow-[#2a3c76d1] w-full h-full px-10 flex flex-col justify-center text-[#000]">
+            <div className="flex items-center gap-1.5 text-[#214098] w-fit mb-3">
+              <Bell size={12} />
+              <p className="text-sm uppercase font-medium">Coming Soon</p>
             </div>
-
-            <div className="flex flex-row gap-2 items-center mt-1">
-              <div className="gap-2"></div>
-              <RiProgress8Fill size={12} className="text-foreground/50" />
-              <p className="text-foreground/50">Your Progress: </p>
-              <span className="block lg:hidden text-primary">0%</span>
-              <div
-                className="radial-progress lg:grid hidden text-primary"
-                style={
-                  {
-                    "--value": "0",
-                    "--size": "4rem",
-                    "--thickness": "4px",
-                  } /* as React.CSSProperties */
-                }
-                aria-valuenow={0}
-                role="progressbar"
-              >
-                0%
-              </div>
-            </div>
+            <p className="text-3xl font-black mb-3">
+              Introduction to 3D Modeling and Printing
+            </p>
+            <p className="text-sm text-black/50">
+              Get ready with Ms. Sefam Adagbe to explore the intricacies of 3D
+              modeling with Autodesk Fusion 360 and discover how easy it is
+              begin your 3D printing journey!
+            </p>
           </div>
-          <button className="w-full mt-12 px-5 py-2 bg-primary text-white text-md font-medium rounded-xl grid place-items-center hover:bg-primary/80 duration-300 cursor-pointer">
-            Continue
-          </button>
         </div>
+        <div className="w-full lg:w-1/2 h-full relative">
+          <img
+            src={upcoming}
+            className="object-center object-cover w-full h-full"
+          />
+          <div className="flex lg:hidden absolute bg-linear-to-t from-[#000000b6] to-[#00000000] w-full h-60 bottom-0 flex-col justify-end px-8 py-6">
+            <div className="flex items-center gap-1.5 text-white w-fit mb-3">
+              <Bell size={12} />
+              <p className="text-sm uppercase font-medium">Coming Soon</p>
+            </div>
+            <p className="text-2xl font-bold mb-3">
+              Introduction to 3D Modeling and Printing
+            </p>
+            <p className="text-sm text-white/80">
+              Get ready with Ms. Sefam Adagbe to explore the intricacies of 3D
+              modeling with Autodesk Fusion 360 and discover how easy it is
+              begin your 3D printing journey!
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="grid auto-rows-min gap-4 grid-cols-1 lg:grid-cols-2 lg:grid-rows-4">
+        {lastCourse === undefined ? (
+          <div className="bg-sidebar col-span-1 lg:row-span-1 lg:col-span-1 rounded-xl py-4 px-8 flex items-center justify-center flex-col gap-3 relative">
+            <img src={studyIcon} alt="" className="w-1/4" />
+            <p className="font-medium text-xl opacity-50">
+              Your journey awaits!
+            </p>
+            <div className="text-foreground/50 top-4 left-8 absolute">
+              Current Progress
+            </div>
+          </div>
+        ) : (
+          <div className="bg-sidebar col-span-1 lg:row-span-1 lg:col-span-1 rounded-xl py-4 px-8 relative">
+            <div className="text-foreground/50 mb-4 lg:mb-8">
+              Current Progress
+            </div>
+            <div className="flex flex-col lg:flex-row lg:justify-between">
+              <div className="">
+                <div className="flex gap-4 items-center-justify-center">
+                  <p className="font-bold text-foreground text-2xl capitalize">
+                    {lastCourse.course.title}
+                  </p>
+                  <p className="px-3 py-2 bg-primary/5 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center absolute top-4 right-4">
+                    {lastCourse.course.level}
+                  </p>
+                </div>
+                <div className="text-foreground/50 mt-1 flex gap-2">
+                  <IoPerson size={12} /> <span>{lastCourse.name}</span>
+                </div>
+                <div className="mt-1 flex items-center gap-2 text-foreground/50">
+                  <History size={12} />
+                  <span>{lastCourse.lessons.title}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-row gap-2 items-center mt-1">
+                <div className="gap-2"></div>
+                <RiProgress8Fill size={12} className="text-foreground/50" />
+                <p className="text-foreground/50">Progress: </p>
+                <span className="block lg:hidden text-primary">
+                  {lastCourse.progress}%
+                </span>
+                <div
+                  className="radial-progress lg:grid hidden text-primary"
+                  style={
+                    {
+                      "--value": lastCourse.progress,
+                      "--size": "4rem",
+                      "--thickness": "4px",
+                    } /* as React.CSSProperties */
+                  }
+                  aria-valuenow={lastCourse.progress}
+                  role="progressbar"
+                >
+                  {lastCourse.progress}
+                </div>
+              </div>
+            </div>
+            <button className="w-full mt-12 px-5 py-2 bg-primary text-white text-md font-medium rounded-xl grid place-items-center hover:bg-primary/80 duration-300 cursor-pointer">
+              Continue
+            </button>
+          </div>
+        )}
         <div className="relative bg-sidebar col-span-1 lg:row-span-2 lg:col-span-1 rounded-xl py-4 px-8">
           <div className="text-foreground/50 mb-4">Study Schedule</div>
           <Calendar20 />

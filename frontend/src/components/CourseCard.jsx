@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Trophy,
@@ -19,6 +19,26 @@ import {
 import ReactMarkdown from "react-markdown";
 
 const CourseCard = ({ course, onClick }) => {
+  const [runtime, setRuntime] = useState();
+
+  useEffect(() => {
+    let totalCourseRuntime = 0;
+    for (let i = 0; i < course.lessons.length; i++) {
+      totalCourseRuntime = course.lessons[i].runtime + totalCourseRuntime;
+      i++;
+    }
+
+    setRuntime(totalCourseRuntime);
+  }, []);
+
+  const formatRuntime = (runtime) => {
+    const hrs = Math.floor(runtime / 3600);
+    const mins = Math.floor((runtime % 3600) / 60);
+
+    if (hrs < 1) return `${mins} mins`;
+    else return `${hrs} hrs, ${mins} mins`;
+  };
+
   return (
     <div className="bg-sidebar border border-border flex flex-col justify-between rounded-xl p-3 hover:scale-[1.01] duration-300 relative">
       <Tooltip>
@@ -95,10 +115,10 @@ const CourseCard = ({ course, onClick }) => {
 
       <div className="flex gap-1 items-center mt-3">
         <div className="flex bg-accent items-center text-foreground/50 px-3 py-2 rounded-lg gap-2">
-          {course.lessonsCount} lessons
+          {course.lessons.length} lessons
         </div>
         <div className="flex bg-accent items-center text-foreground/50 px-3 py-2 rounded-lg gap-2">
-          {course.duration} run time
+          {formatRuntime(runtime)}
         </div>
         <div className="flex bg-accent items-center text-foreground/50 px-3 py-2 rounded-lg gap-2">
           <Star size={14} />

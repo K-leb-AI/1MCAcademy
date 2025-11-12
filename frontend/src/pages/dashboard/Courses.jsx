@@ -35,12 +35,18 @@ const Courses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const { data: courseData, error } = await supabase.from("course")
-          .select(`
+        const { data: courseData, error } = await supabase
+          .from("course")
+          .select(
+            `
             *,
-            instructor: instructor_id (name),
-            badge: badge_id (title)
-          `);
+            instructor (name),
+            badge (title),
+            lessons (runtime)
+          `
+          );
+
+        console.log(courseData);
 
         if (error) {
           console.error("Error fetching courses:", error);
@@ -64,7 +70,7 @@ const Courses = () => {
   }
 
   return (
-    <div className="mb-5 px-4 md:px-10">
+    <div className="mb-5 mt-12 px-4 md:px-10">
       <div className="flex w-full max-w-xl items-center gap-2 relative">
         <Input
           type="text"

@@ -4,6 +4,7 @@ import { supabase } from "../../supabaseClient";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
+import { Check } from "lucide-react";
 
 const CourseContentPage = () => {
   const location = useLocation();
@@ -45,6 +46,26 @@ const CourseContentPage = () => {
         .eq("completed", true)
         .single();
 
+      const { data: user_course_id, error } = await supabase
+        .from("user_courses")
+        .select("id")
+        .eq("course_id", courseId)
+        .eq("user_id", loggedUser.id)
+        .single();
+
+      if (error) throw Error(error);
+
+      const { data: updateProfileData, error: updateProfileError } =
+        await supabase
+          .from("profile")
+          .update({
+            last_course_id: user_course_id.id,
+          })
+          .eq("user_id", loggedUser.id);
+
+      console.log(updateProfileData);
+      console.log(updateProfileError);
+
       // Lesson already completed - just update last_lesson_id
       if (checkLessonData) {
         await supabase
@@ -53,7 +74,11 @@ const CourseContentPage = () => {
             last_lesson_id: selectedLesson.id,
           })
           .eq("user_id", loggedUser.id)
-          .eq("course_id", courseId);
+          .eq("course_id", courseId)
+          .select("id");
+
+        console.log(user_course_id);
+
         return;
       }
 
@@ -119,17 +144,17 @@ const CourseContentPage = () => {
           await supabase
             .from("lessons")
             .select(
-              `
-              id,
-              title,
-              description,
-              video_url,
-              course_id,
-              course: course_id (title),
-              user_lessons (completed)
-            `
+              ` id,
+                title,
+                description,
+                video_url,
+                course_id,
+                course: course_id (title),
+                user_lessons!left (lesson_id, completed, user_id)
+                `
             )
             .eq("course_id", courseId)
+            .eq("user_lessons.user_id", loggedUser.id)
             .order("id", { ascending: true });
 
         if (fetchLessonsError) throw fetchLessonsError;
@@ -216,11 +241,11 @@ const CourseContentPage = () => {
       window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
     }
 
-    return () => {
-      if (player && typeof player.destroy === "function") {
-        player.destroy();
-      }
-    };
+    // return () => {
+    //   if (player && typeof player.destroy === "function") {
+    //     player.destroy();
+    //   }
+    // };
   }, [embeddedUrl, selectedLesson, handleLessonComplete]);
 
   if (isLoading || isFetching) {
@@ -327,7 +352,7 @@ const CourseContentPage = () => {
                   ${isSelected ? "bg-accent text-foreground" : ""}
                   ${
                     isCompleted && !isSelected
-                      ? "bg-accent/20 text-foreground/50 line-through"
+                      ? "bg-accent/20 text-foreground/50"
                       : ""
                   }
                   ${!isSelected && !isCompleted ? "hover:bg-accent/50" : ""}
@@ -338,7 +363,7 @@ const CourseContentPage = () => {
               >
                 {lesson.title}
                 {isCompleted && !isSelected && (
-                  <span className="ml-2 text-xs">✓</span>
+                  <Check className="ml-2 text-sm inline" size={14} />
                 )}
               </li>
             );

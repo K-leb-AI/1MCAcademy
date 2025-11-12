@@ -16,7 +16,7 @@ const CourseDetail = () => {
 
   const handleEnroll = async () => {
     setIsFetching(true);
-    if (course.isEnrolled)
+    if (course.status === "enrolled" || course.status === "completed")
       navigate(`/dashboard/courses/${courseId}/${course.last_lesson_id}`);
     else {
       try {
@@ -35,8 +35,7 @@ const CourseDetail = () => {
 
         console.log("Enrollment successful:", data);
         toast.success("Successfully enrolled!");
-        setCourse((prev) => ({ ...prev, isEnrolled: true }));
-
+        setCourse((prev) => ({ ...prev, status: "enrolled" }));
         navigate(`/dashboard/courses/${courseId}/1`);
       } catch (err) {
         console.error("Unexpected error enrolling:", err);
@@ -52,7 +51,7 @@ const CourseDetail = () => {
       try {
         const { data: courseData, error: courseError } = await supabase
           .from("course")
-          .select("*, instructor: instructor_id (name, bio)")
+          .select("*, instructor: instructor_id (name, bio), lessons (runtime)")
           .eq("id", courseId)
           .single();
 
@@ -74,26 +73,39 @@ const CourseDetail = () => {
           console.error("Error fetching user-course:", userCourseError);
         }
 
-        if (userCourse?.status === "enrolled")
-          setCourse({
-            ...courseData,
-            isEnrolled: true,
-            last_lesson_id: userCourse.last_lesson_id,
-          });
-        else setCourse({ ...courseData, isEnrolled: false });
+        let totalCourseRuntime = 0;
+        for (let i = 0; i < courseData.lessons.length; i++) {
+          totalCourseRuntime =
+            courseData.lessons[i].runtime + totalCourseRuntime;
+          i++;
+        }
 
-        console.log("Last lesson:", course);
+        console.log(totalCourseRuntime);
+
+        setCourse({
+          ...courseData,
+          status: userCourse?.status,
+          last_lesson_id: userCourse?.last_lesson_id,
+          runtime: totalCourseRuntime,
+        });
       } catch (err) {
         console.error("Unexpected error:", err);
         toast.error("Something went wrong while loading the course.");
       } finally {
         setIsFetching(false);
-        console.log(isLoading, isFetching);
       }
     };
 
     handleCourseFetch();
   }, [courseId, navigate]);
+
+  const formatRuntime = (runtime) => {
+    const hrs = Math.floor(runtime / 3600);
+    const mins = Math.floor((runtime % 3600) / 60);
+
+    if (hrs < 1) return `${mins} mins`;
+    else return `${hrs} hrs, ${mins} mins`;
+  };
 
   if (isLoading || isFetching) {
     return <Loading />;
@@ -121,10 +133,10 @@ const CourseDetail = () => {
 
             <div className="flex gap-1 items-center mt-3 flex-wrap">
               <div className="flex bg-accent items-center text-foreground/50 px-3 py-2 rounded-lg gap-2 text-xs">
-                {course.lessonsCount} lessons
+                {course.lessons.length} lessons
               </div>
               <div className="flex bg-accent items-center text-foreground/50 px-3 py-2 rounded-lg gap-2 text-xs">
-                {course.duration} run time
+                {formatRuntime(course.runtime)}
               </div>
               <div className="flex bg-accent items-center text-foreground/50 px-3 py-2 rounded-lg gap-2 text-xs">
                 <Star size={14} />
@@ -145,7 +157,11 @@ const CourseDetail = () => {
               className="py-2 flex items-center justify-center text-xs bg-primary hover:bg-primary/80 text-white w-full rounded-xl mt-2 cursor-pointer duration-300"
               onClick={handleEnroll}
             >
-              {course.isEnrolled ? "Go to course" : "Enroll Now"}
+              {course?.status === "completed"
+                ? "Revisit course"
+                : course?.status === "enrolled"
+                ? "Go to course"
+                : "Enroll Now"}
             </button>
           </div>
         </div>

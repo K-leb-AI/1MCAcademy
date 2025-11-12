@@ -7,7 +7,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 export default function Calendar20() {
-  const [date, setDate] = React.useState(new Date(2025, 5, 12));
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const day = today.getDate();
+
+  const [date, setDate] = React.useState(new Date(`${year}, ${month}, ${day}`));
   const [selectedTime, setSelectedTime] = React.useState("10:00");
   const timeSlots = Array.from({ length: 37 }, (_, i) => {
     const totalMinutes = i * 15;
@@ -18,11 +23,6 @@ export default function Calendar20() {
       .padStart(2, "0")}`;
   });
 
-  const bookedDates = Array.from(
-    { length: 3 },
-    (_, i) => new Date(2025, 5, 17 + i)
-  );
-
   return (
     <Card className="gap-0 p-0">
       <CardContent className="relative p-0 md:pr-48">
@@ -32,14 +32,7 @@ export default function Calendar20() {
             selected={date}
             onSelect={setDate}
             defaultMonth={date}
-            disabled={bookedDates}
             showOutsideDays={false}
-            modifiers={{
-              booked: bookedDates,
-            }}
-            modifiersClassNames={{
-              booked: "[&>button]:line-through opacity-100",
-            }}
             className="bg-transparent p-0 [--cell-size:--spacing(10)] md:[--cell-size:--spacing(12)]"
             formatters={{
               formatWeekdayName: (date) => {
