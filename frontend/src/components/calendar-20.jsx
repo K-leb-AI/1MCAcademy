@@ -12,7 +12,8 @@ export default function Calendar20() {
   const month = today.getMonth() + 1;
   const day = today.getDate();
 
-  const [date, setDate] = React.useState(new Date(`${year}, ${month}, ${day}`));
+  // const [date, setDate] = React.useState(new Date(`${year}, ${month}, ${day}`));
+  const [date, setDate] = React.useState(new Date(`2025, 11, 12`));
   const [selectedTime, setSelectedTime] = React.useState("10:00");
   const timeSlots = Array.from({ length: 37 }, (_, i) => {
     const totalMinutes = i * 15;
