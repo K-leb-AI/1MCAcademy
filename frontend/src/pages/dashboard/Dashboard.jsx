@@ -36,10 +36,22 @@ const Dashboard = () => {
           .eq("id", userCoursesData.course.instructor_id)
           .single();
 
+        if (!userCoursesData) {
+          setLastCourse({
+            ...userCoursesData,
+            ...instructorData,
+          });
+        }
+
         if (instructorError || userCoursesError)
           throw Error(courseError || userCoursesError);
 
         setLastCourse({
+          ...userCoursesData,
+          ...instructorData,
+        });
+
+        console.log({
           ...userCoursesData,
           ...instructorData,
         });
@@ -59,23 +71,20 @@ const Dashboard = () => {
   if (isLoading || isFetching) {
     return <Loading />;
   }
-  if (!userProfile || !loggedUser) {
-    return null;
-  }
 
   return (
     <div className="mb-5 mt-12 px-4 md:px-10">
       <div className="lg:flex items-center justify-between">
         <div className="mt-4 lg:mb-8 mb-2 font-bold text-2xl flex gap-2 items-center">
           <div className="w-8 aspect-square rounded-full bg-primary/20 grid place-items-center text-primary text-lg">
-            {loggedUser.user_metadata.display_name.split(" ")[0][0]}
+            {loggedUser?.user_metadata.display_name.split(" ")[0][0]}
           </div>
-          Welcome back, {loggedUser.user_metadata.display_name.split(" ")[0]}
+          Welcome back, {loggedUser?.user_metadata.display_name.split(" ")[0]}
         </div>
         <div className="flex items-center mt-4 mb-8 gap-3">
           <div className="bg-accent text-foreground/50 flex h-8 items-center justify-center rounded-lg p-2 gap-1 animate-pulse">
             <HiLightningBolt size={17} />
-            <p>{userProfile.current_streak}</p>
+            <p>{userProfile?.current_streak}</p>
           </div>
           <div className="bg-accent text-foreground/50 flex aspect-square size-8 items-center justify-center rounded-lg p-2">
             <Waypoints size={17} />
@@ -85,7 +94,7 @@ const Dashboard = () => {
               Current Skill Path
             </span>
             <span className="text-xs text-foreground/50 capitalize">
-              {userProfile.skill_path} . {userProfile.experience}
+              {userProfile?.skill_path} . {userProfile?.experience}
             </span>
           </div>
         </div>
@@ -148,18 +157,18 @@ const Dashboard = () => {
               <div className="">
                 <div className="flex gap-4 items-center-justify-center">
                   <p className="font-bold text-foreground text-2xl capitalize">
-                    {lastCourse.course.title}
+                    {lastCourse?.course.title}
                   </p>
                   <p className="px-3 py-2 bg-primary/5 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center absolute top-4 right-4">
-                    {lastCourse.course.level}
+                    {lastCourse?.course.level}
                   </p>
                 </div>
                 <div className="text-foreground/50 mt-1 flex gap-2">
-                  <IoPerson size={12} /> <span>{lastCourse.name}</span>
+                  <IoPerson size={12} /> <span>{lastCourse?.name}</span>
                 </div>
                 <div className="mt-1 flex items-center gap-2 text-foreground/50">
                   <History size={12} />
-                  <span>{lastCourse.lessons.title}</span>
+                  <span>{lastCourse?.lessons.title}</span>
                 </div>
               </div>
 
@@ -168,28 +177,28 @@ const Dashboard = () => {
                 <RiProgress8Fill size={12} className="text-foreground/50" />
                 <p className="text-foreground/50">Progress: </p>
                 <span className="block lg:hidden text-primary">
-                  {lastCourse.progress}%
+                  {lastCourse?.progress}%
                 </span>
                 <div
                   className="radial-progress lg:grid hidden text-primary"
                   style={
                     {
-                      "--value": lastCourse.progress,
+                      "--value": lastCourse?.progress,
                       "--size": "4rem",
                       "--thickness": "4px",
                     } /* as React.CSSProperties */
                   }
-                  aria-valuenow={lastCourse.progress}
+                  aria-valuenow={lastCourse?.progress}
                   role="progressbar"
                 >
-                  {lastCourse.progress}%
+                  {lastCourse?.progress}%
                 </div>
               </div>
             </div>
             <button
               className="w-full mt-12 px-5 py-2 bg-primary text-white text-md font-medium rounded-xl grid place-items-center hover:bg-primary/80 duration-300 cursor-pointer"
               onClick={() =>
-                handleContinue(lastCourse.course.id, lastCourse.lessons.id)
+                handleContinue(lastCourse?.course.id, lastCourse?.lessons.id)
               }
             >
               Continue

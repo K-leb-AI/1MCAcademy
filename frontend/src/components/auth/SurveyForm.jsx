@@ -208,25 +208,36 @@ export default function RecommendationSurvey() {
   const [interest, setInterest] = useState(null);
   const [goal, setGoal] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
   // const [loggedUser, setLoggedUser] = useState(null);
 
-  useEffect(() => {
-    const getSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      console.log("Session:", data, error);
-    };
-    getSession();
-  }, []);
+  // useEffect(() => {
+  //   const handleAuthRedirect = async () => {
+  //     const code = searchParams.get("code");
 
-  const { loggedUser, userProfile, isLoading } = useUser();
+  //     if (code) {
+  //       console.log("Auth code found:", code);
 
-  if (userProfile && loggedUser) {
-    return <Navigate to="/dashboard" />;
-  }
+  //       const { data, error } = await supabase.auth.exchangeCodeForSession(
+  //         code
+  //       );
+  //       if (error) {
+  //         console.error("Error exchanging code:", error);
+  //       } else {
+  //         console.log("Session stored successfully:", data.session);
+  //       }
+  //     } else {
+  //       console.log("No code param found in URL.");
+  //     }
+  //   };
+  //   handleAuthRedirect();
+  // }, []);
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  const { loggedUser, isLoading } = useUser();
+
+  // if (loggedUser) {
+  //   return <Navigate to="/dashboard" />;
+  // }
 
   // === Handle Supabase Auth ===
   // useEffect(() => {
@@ -263,6 +274,7 @@ export default function RecommendationSurvey() {
   // }, [navigate, searchParams]);
 
   const handleEnroll = async (recommendation) => {
+    setIsFetching(true);
     try {
       if (!loggedUser?.id) {
         toast.error("Please log in again.");
@@ -306,10 +318,12 @@ export default function RecommendationSurvey() {
       toast.success(
         `Welcome, ${loggedUser.user_metadata?.display_name || "Learner"}!`
       );
-      navigate("/dashboard");
     } catch (err) {
       console.error("Unexpected error during enrollment:", err);
       toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsFetching(false);
+      navigate("/dashboard");
     }
   };
 
@@ -337,6 +351,10 @@ export default function RecommendationSurvey() {
     setGoal(null);
     setRecommendations([]);
   };
+
+  if (isLoading || isFetching) {
+    return <Loading />;
+  }
 
   // === UI ===
   return (

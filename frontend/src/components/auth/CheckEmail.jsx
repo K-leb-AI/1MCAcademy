@@ -6,7 +6,11 @@ import toast from "react-hot-toast";
 export const CheckEmail = () => {
   const handleResend = async () => {
     // const redirectTo = window.location.origin;
-    const redirectTo = import.meta.env.VITE_SITE_URL;
+    // const redirectTo = import.meta.env.VITE_SITE_URL;
+    const redirectTo =
+      import.meta.env.VITE_MODE === "production"
+        ? import.meta.env.VITE_SITE_URL
+        : window.location.origin;
     try {
       let email = localStorage.getItem("email");
       if (email) email = JSON.parse(email);
