@@ -210,6 +210,14 @@ export default function RecommendationSurvey() {
   const [recommendations, setRecommendations] = useState([]);
   // const [loggedUser, setLoggedUser] = useState(null);
 
+  useEffect(() => {
+    const getSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      console.log("Session:", data, error);
+    };
+    getSession();
+  }, []);
+
   const { loggedUser, userProfile, isLoading } = useUser();
 
   if (userProfile && loggedUser) {

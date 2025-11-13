@@ -14,7 +14,7 @@ export const UserProvider = ({ children }) => {
       try {
         const { data, error: authError } = await supabase.auth.getUser();
         if (authError) {
-          console.error("Error fetching authenticated user:", authError);
+          console.error("Error fetching authenticated user caleb:", authError);
           setIsLoading(false);
           return;
         }

@@ -9,11 +9,13 @@ import { CarouselSpacing } from "../../components/Carousel";
 import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
 import { supabase } from "@/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { loggedUser, userProfile, isLoading } = useUser();
   const [lastCourse, setLastCourse] = useState();
   const [isFetching, setIsFetching] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLastCourse = async () => {
@@ -22,7 +24,7 @@ const Dashboard = () => {
           await supabase
             .from("user_courses")
             .select(
-              "progress, lessons(title), course(title, level, instructor_id)"
+              "progress, lessons(id, title), course(id, title, level, instructor_id)"
             )
             .eq("id", userProfile.last_course_id)
             .eq("user_id", loggedUser.id)
@@ -50,6 +52,10 @@ const Dashboard = () => {
     fetchLastCourse();
   }, []);
 
+  const handleContinue = (courseId, lessonId) => {
+    navigate(`courses/${courseId}/${lessonId}`);
+  };
+
   if (isLoading || isFetching) {
     return <Loading />;
   }
@@ -61,7 +67,9 @@ const Dashboard = () => {
     <div className="mb-5 mt-12 px-4 md:px-10">
       <div className="lg:flex items-center justify-between">
         <div className="mt-4 lg:mb-8 mb-2 font-bold text-2xl flex gap-2 items-center">
-          <div className="w-8 aspect-square rounded-full bg-accent"></div>
+          <div className="w-8 aspect-square rounded-full bg-primary/20 grid place-items-center text-primary text-lg">
+            {loggedUser.user_metadata.display_name.split(" ")[0][0]}
+          </div>
           Welcome back, {loggedUser.user_metadata.display_name.split(" ")[0]}
         </div>
         <div className="flex items-center mt-4 mb-8 gap-3">
@@ -92,7 +100,7 @@ const Dashboard = () => {
             <p className="text-3xl font-black mb-3">
               Introduction to 3D Modeling and Printing
             </p>
-            <p className="text-sm text-black/50">
+            <p className="text-sm text-black/40 leading-6">
               Get ready with Ms. Sefam Adagbe to explore the intricacies of 3D
               modeling with Autodesk Fusion 360 and discover how easy it is
               begin your 3D printing journey!
@@ -174,11 +182,16 @@ const Dashboard = () => {
                   aria-valuenow={lastCourse.progress}
                   role="progressbar"
                 >
-                  {lastCourse.progress}
+                  {lastCourse.progress}%
                 </div>
               </div>
             </div>
-            <button className="w-full mt-12 px-5 py-2 bg-primary text-white text-md font-medium rounded-xl grid place-items-center hover:bg-primary/80 duration-300 cursor-pointer">
+            <button
+              className="w-full mt-12 px-5 py-2 bg-primary text-white text-md font-medium rounded-xl grid place-items-center hover:bg-primary/80 duration-300 cursor-pointer"
+              onClick={() =>
+                handleContinue(lastCourse.course.id, lastCourse.lessons.id)
+              }
+            >
               Continue
             </button>
           </div>

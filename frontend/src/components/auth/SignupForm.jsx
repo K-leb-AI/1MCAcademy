@@ -25,7 +25,14 @@ const SignupForm = () => {
 
   const navigate = useNavigate();
   // const redirectTo = window.location.origin;
-  const redirectTo = import.meta.env.VITE_SITE_URL;
+  // const redirectTo = import.meta.env.VITE_SITE_URL;
+
+  console.log(import.meta.env.MODE);
+
+  const redirectTo =
+    import.meta.env.MODE === "production"
+      ? import.meta.env.VITE_SITE_URL
+      : window.location.origin;
 
   //check password
   const handleChange = (e) => {
