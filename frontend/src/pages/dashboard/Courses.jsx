@@ -95,7 +95,7 @@ const Courses = () => {
       <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredSearch.map((course, index) => (
           <CourseCard
-            key={course.id || index}
+            key={index}
             course={course}
             onClick={() => handleClick(course.id)}
           />

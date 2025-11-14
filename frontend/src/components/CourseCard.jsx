@@ -91,14 +91,14 @@ const CourseCard = ({ course, onClick }) => {
           </p>
         </div>
         <div className="text-xs text-foreground/50 mt-2 border-l border-foreground/10 pl-4 leading-4.5 py-1">
-          {course.description.length >= 130 ? (
+          {course?.description?.length >= 130 ? (
             <div className="flex">
               <ReactMarkdown>
                 {course.description.slice(0, 130).concat(" ...")}
               </ReactMarkdown>
             </div>
           ) : (
-            <ReactMarkdown>course.description</ReactMarkdown>
+            <ReactMarkdown>{course.description}</ReactMarkdown>
           )}
         </div>
         <div className="text-foreground/50 text-xs mt-3 flex gap-2">

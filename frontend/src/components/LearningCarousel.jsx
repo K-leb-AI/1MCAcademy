@@ -29,13 +29,15 @@ export function CarouselSize({ courses }) {
                 <div className=" rounded-xl hover:scale-[1.005] duration-300 ">
                   <div className="flex items-center gap-4">
                     <img
-                      src={course.thumbnail}
+                      src={course.course.thumbnail_url}
                       className={`w-12 aspect-square rounded-xl object-cover`}
                     />
                     <div className="">
-                      <h3 className="text-lg font-semibold">{course.title}</h3>
+                      <h3 className="text-lg font-semibold">
+                        {course.course.title}
+                      </h3>
                       <p className="text-sm text-foreground/50">
-                        {course.instructor}
+                        {course.course.instructor.name}
                       </p>
                     </div>
                   </div>
@@ -43,11 +45,11 @@ export function CarouselSize({ courses }) {
                   <div className="w-full bg-foreground/10 h-0.5 ounded-full mt-3">
                     <div
                       className="bg-primary h-0.5 rounded-full"
-                      style={{ width: "45%" }}
+                      style={{ width: course.progress }}
                     ></div>
                   </div>
                   <div className="text-xs text-foreground/50 mt-2 flex justify-end">
-                    45% complete . 7/15 lessons
+                    {course.progress}% complete
                   </div>
                   <Button
                     variant="secondary"

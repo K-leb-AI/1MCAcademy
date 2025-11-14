@@ -139,7 +139,7 @@ const Dashboard = () => {
       </div>
       <div className="grid auto-rows-min gap-4 grid-cols-1 lg:grid-cols-2 lg:grid-rows-4">
         {lastCourse === undefined ? (
-          <div className="bg-sidebar col-span-1 lg:row-span-1 lg:col-span-1 rounded-xl py-4 px-8 flex items-center justify-center flex-col gap-3 relative">
+          <div className="bg-sidebar col-span-1 lg:row-span-1 lg:col-span-1 rounded-xl p-8 flex items-center justify-center flex-col gap-3 relative">
             <img src="study.svg" alt="" className="w-1/4" />
             <p className="font-medium text-xl opacity-50">
               Your journey awaits!

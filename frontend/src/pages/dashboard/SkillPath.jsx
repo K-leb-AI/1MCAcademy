@@ -7,14 +7,21 @@ import {
 import { ChevronRight, Plus } from "lucide-react";
 import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
+// import { MdWork } from "react-icons/md";
+import Timeline from "@mui/lab/Timeline";
+import TimelineItem, { timelineItemClasses } from "@mui/lab/TimelineItem";
+import TimelineSeparator from "@mui/lab/TimelineSeparator";
+import TimelineConnector from "@mui/lab/TimelineConnector";
+import TimelineContent from "@mui/lab/TimelineContent";
+import TimelineDot from "@mui/lab/TimelineDot";
 
 const SkillPath = () => {
   const skillPaths = [
     {
       id: 1,
-      title: "3D Modeling",
+      title: "3D Modeling & Printing",
       description:
-        "Master the art of creating digital 3D assets for games, animation, and AR/VR experiences.",
+        "3D Modeling teaches students how to create digital objects and characters used in games, animation, and AR/VR. They learn the basics of shaping models, adding detail, and applying textures—along with how to prepare their designs for real-world 3D printing, turning digital creations into physical objects.",
       image:
         "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg",
       keySkills: [
@@ -29,7 +36,7 @@ const SkillPath = () => {
       id: 2,
       title: "Virtual Reality Development",
       description:
-        "Build immersive VR experiences and interactive environments with Unity and Unreal Engine.",
+        "Virtual Reality Development introduces students to building immersive digital environments. Using tools like Unity or Unreal Engine, they learn how VR devices work and how to create interactive, engaging experiences that feel real and responsive.",
       image:
         "https://images.pexels.com/photos/1261820/pexels-photo-1261820.jpeg",
       keySkills: [
@@ -43,7 +50,7 @@ const SkillPath = () => {
       id: 3,
       title: "Web Development",
       description:
-        "Learn to design and build responsive, modern web applications from scratch.",
+        "Web Development covers the essentials of building modern websites and web applications. Students learn HTML, CSS, JavaScript, and tools like React, gaining the skills needed to design, develop, and deploy responsive, user-friendly sites.",
       image:
         "https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg",
       keySkills: [
@@ -57,7 +64,7 @@ const SkillPath = () => {
       id: 4,
       title: "Python Programming",
       description:
-        "Build coding foundations with Python and move toward data analysis and automation.",
+        "Python Programming helps students develop strong coding foundations. They learn how to write clean code, solve problems, and work with data, preparing them for areas like automation, backend development, and data analysis.",
       image:
         "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg",
       keySkills: [
@@ -71,7 +78,7 @@ const SkillPath = () => {
       id: 5,
       title: "Entrepreneurship",
       description:
-        "Develop the mindset and tools to start, manage, and scale innovative businesses.",
+        "Entrepreneurship guides students through turning ideas into real businesses. They learn how to identify opportunities, validate concepts, understand customers, and build the skills needed to launch and manage a successful venture.",
       image:
         "https://images.pexels.com/photos/3183172/pexels-photo-3183172.jpeg",
       keySkills: [
@@ -85,7 +92,7 @@ const SkillPath = () => {
       id: 6,
       title: "Drone Piloting",
       description:
-        "Learn how to operate drones safely and professionally for photography, mapping, and delivery.",
+        "Drone Piloting teaches students how to safely fly and control drones for creative and professional purposes. They explore aerial photography, navigation, and drone regulations while developing confidence and technical skill.",
       image:
         "https://images.pexels.com/photos/1045776/pexels-photo-1045776.jpeg",
       keySkills: [
@@ -231,33 +238,44 @@ const SkillPath = () => {
         Coders initiative to empower the next generation of digital creators.
       </p>
 
-      {/* --- Skill Path Cards --- */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+      {/* <div className="grid md:grid-cols-2 gap-4 mb-16">
         {skillPaths.map((path) => (
           <div
             key={path.id}
-            className="bg-sidebar rounded-xl p-3 hover:scale-[1.01] duration-300 shadow-sm"
+            className="bg-sidebar rounded-xl hover:scale-[1.01] duration-300 shadow-sm border border-border flex gap-2 overflow-clip"
           >
-            <div
-              className="w-full h-50 rounded-lg bg-cover bg-center mb-4"
-              style={{ backgroundImage: `url(${path.image})` }}
-            ></div>
-
-            <h2 className="text-xl font-semibold mb-2">{path.title}</h2>
-            <p className="text-sm text-foreground/60 mb-3">
-              {path.description}
-            </p>
-
-            <ul className="text-xs text-foreground/50 mb-3 space-y-1">
-              {path.keySkills.map((skill, i) => (
-                <li key={i}>• {skill}</li>
-              ))}
-            </ul>
+            
+            <div className=" py-3 px-5">
+              <h2 className="text-xl font-semibold mb-2">{path.title}</h2>
+              <p className="text-xs text-foreground/60 mb-3 leading-6 text-justify">
+                {path.description}
+              </p>
+            </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
-      {/* --- WHY THESE SIX DISCIPLINES --- */}
+      {/* <Timeline
+        sx={{
+          [`& .${timelineItemClasses.root}:before`]: {
+            flex: 0,
+            padding: 0,
+          },
+        }}
+      >
+        <TimelineItem>
+          {
+
+          <TimelineSeparator>
+            <TimelineDot />
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>Eat</TimelineContent>
+        </TimelineItem>
+      }
+
+      </Timeline> */}
+
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="w-full lg:w-2/3 text-foreground">
           <h2 className="text-2xl font-bold mb-4">
