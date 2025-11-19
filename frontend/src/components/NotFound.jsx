@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { MdArrowBack } from "react-icons/md";
 import { motion } from "motion/react";
+import { IoCloudOffline } from "react-icons/io5";
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -26,9 +27,12 @@ const NotFound = () => {
               <MdArrowBack size={18} /> Back
             </button>
           </div>
-          <h1 className="text-2xl font-bold">404 | Page Not Found</h1>
-          <p className="text-gray mb-2 font-light">
-            The page you're looking for doesn't exist
+          <div className="flex justify-center">
+            <IoCloudOffline size={80} className="text-foreground/20" />
+          </div>
+          <h1 className="text-2xl font-bold">You lost your connection</h1>
+          <p className="text-foreground/50 mb-2 font-light">
+            Try again when you're reconnected
           </p>
         </div>
       </motion.div>

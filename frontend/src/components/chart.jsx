@@ -1,6 +1,6 @@
 "use client";
-
-import { TrendingUp } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/supabaseClient";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -16,26 +16,99 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useUser } from "@/utils/UserProvider";
 
-export const description = "A simple area chart";
-
-const chartData = [
-  { month: "January", desktop: 0 },
-  { month: "February", desktop: 19 },
-  { month: "March", desktop: 15 },
-  { month: "April", desktop: 14 },
-  { month: "May", desktop: 10 },
-  { month: "June", desktop: 18 },
-  { month: "June", desktop: 18 },
-];
+// const chartData = [
+//   { month: "January", completedLessons: 0, completedHours: 0 },
+//   { month: "February", completedLessons: 0, completedHours: 0 },
+//   { month: "March", completedLessons: 0, completedHours: 0 },
+//   { month: "April", completedLessons: 0, completedHours: 0 },
+//   { month: "May", completedLessons: 0, completedHours: 0 },
+//   { month: "June", completedLessons: 0, completedHours: 0 },
+//   { month: "July", completedLessons: 0, completedHours: 0 },
+//   { month: "August", completedLessons: 0, completedHours: 0 },
+//   { month: "September", completedLessons: 0, completedHours: 0 },
+//   { month: "October", completedLessons: 0, completedHours: 0 },
+//   { month: "November", completedLessons: 1, completedHours: 2.25 },
+//   { month: "December", completedLessons: 0, completedHours: 0 },
+// ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  completedLessons: {
+    label: "Completed lessons",
     color: "var(--chart-1)",
+  },
+  completedHours: {
+    label: "Completed hours",
+    color: "#e77436",
   },
 };
 export function ChartAreaDefault() {
+  const { loggedUser } = useUser();
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    if (!loggedUser) return;
+
+    fetchChartData();
+  }, [loggedUser]);
+
+  const fetchChartData = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("user_lessons")
+        .select("completed_at, lessons(runtime)")
+        .eq("user_id", loggedUser.id)
+        .eq("completed", true)
+        .gte(
+          "completed_at",
+          new Date(new Date().getFullYear(), 0, 1).toISOString()
+        );
+
+      if (error) throw error;
+
+      const monthCounts = Array(12).fill(0);
+      const monthHours = Array(12).fill(0);
+
+      data?.forEach((lesson) => {
+        if (!lesson.completed_at) return;
+
+        const month = new Date(lesson.completed_at).getMonth();
+
+        monthCounts[month]++;
+
+        const runtime = lesson.lessons?.runtime || 0;
+        const hours = runtime / 3600;
+        monthHours[month] += hours;
+      });
+
+      // Format for chart
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      const formatted = monthCounts.map((count, i) => ({
+        month: months[i],
+        completedLessons: count,
+        completedHours: Math.round(monthHours[i] * 100) / 100,
+      }));
+
+      setChartData(formatted);
+    } catch (error) {
+      console.error("Error fetching chart data:", error);
+    }
+  };
   return (
     <Card>
       <CardContent>
@@ -61,11 +134,18 @@ export function ChartAreaDefault() {
               content={<ChartTooltipContent indicator="line" />}
             />
             <Area
-              dataKey="desktop"
-              type="natural"
-              fill="var(--color-desktop)"
+              dataKey="completedLessons"
+              type="basis"
+              fill="var(--color-completedLessons)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              stroke="var(--color-completedLessons)"
+            />
+            <Area
+              dataKey="completedHours"
+              type="basis"
+              fill="var(--color-completedHours)"
+              fillOpacity={0.4}
+              stroke="var(--color-completedHours)"
             />
           </AreaChart>
         </ChartContainer>

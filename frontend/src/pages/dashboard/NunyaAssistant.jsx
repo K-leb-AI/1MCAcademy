@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, NotepadText } from "lucide-react";
 import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
 // import { MdWork } from "react-icons/md";
@@ -15,7 +15,9 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 
-const SkillPath = () => {
+import Makafui from "@/components/Makafui";
+
+const NunyaAssistant = () => {
   const skillPaths = [
     {
       id: 1,
@@ -25,12 +27,11 @@ const SkillPath = () => {
       image:
         "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg",
       keySkills: [
-        "3D geometry fundamentals",
-        "Modeling workflows (Blender)",
-        "Lighting and rendering",
+        "Fusion 360",
+        "Blender",
+        "Rendering and Animation",
         "Texturing and materials",
       ],
-      levels: ["Beginner", "Intermediate", "Advanced"],
     },
     {
       id: 2,
@@ -39,12 +40,7 @@ const SkillPath = () => {
         "Virtual Reality Development introduces students to building immersive digital environments. Using tools like Unity or Unreal Engine, they learn how VR devices work and how to create interactive, engaging experiences that feel real and responsive.",
       image:
         "https://images.pexels.com/photos/1261820/pexels-photo-1261820.jpeg",
-      keySkills: [
-        "Spatial design principles",
-        "VR device integration",
-        "Interactive environment scripting",
-        "Performance optimization",
-      ],
+      keySkills: ["C#", "Unity", "Arkio"],
     },
     {
       id: 3,
@@ -54,10 +50,12 @@ const SkillPath = () => {
       image:
         "https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg",
       keySkills: [
-        "HTML, CSS, and JavaScript",
-        "Frontend frameworks (React)",
-        "APIs and backend basics",
-        "Deployment and version control",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "ReactJs",
+        "NodeJs",
+        "Database Management",
       ],
     },
     {
@@ -68,10 +66,10 @@ const SkillPath = () => {
       image:
         "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg",
       keySkills: [
-        "Python syntax and logic",
+        "Python basics",
         "Data structures and algorithms",
-        "APIs and file handling",
-        "Automation and scripting",
+        "Numpy",
+        "TensorFlow",
       ],
     },
     {
@@ -82,7 +80,7 @@ const SkillPath = () => {
       image:
         "https://images.pexels.com/photos/3183172/pexels-photo-3183172.jpeg",
       keySkills: [
-        "Business model design",
+        "Business Model Design",
         "Market validation",
         "Pitching and fundraising",
         "Scaling operations",
@@ -228,149 +226,85 @@ const SkillPath = () => {
     return <Loading />;
   }
 
+  useEffect(() => {}, []);
+
   return (
-    <div className="mb-5 px-4 md:px-10">
-      {/* --- Page Heading --- */}
-      <h1 className="text-2xl font-bold mt-6 mb-2">Skill Paths</h1>
-      <p className="text-foreground/70 mb-8">
-        Explore learning paths designed to take you from beginner to expert
-        across six essential disciplines — all aligned with Ghana’s One Million
-        Coders initiative to empower the next generation of digital creators.
-      </p>
+    <div className="flex gap-8 flex-col md:flex-row px-4 mt-6 md:px-10">
+      <div className="w-full md:w-3/5 h-[85vh] rounded-xl bg-sidebar relative md:sticky md:top-26 top-3 bottom-8 md:mt-3.5 mb-8">
+        <Makafui />
+      </div>
 
-      {/* <div className="grid md:grid-cols-2 gap-4 mb-16">
-        {skillPaths.map((path) => (
-          <div
-            key={path.id}
-            className="bg-sidebar rounded-xl hover:scale-[1.01] duration-300 shadow-sm border border-border flex gap-2 overflow-clip"
-          >
-            
-            <div className=" py-3 px-5">
-              <h2 className="text-xl font-semibold mb-2">{path.title}</h2>
-              <p className="text-xs text-foreground/60 mb-3 leading-6 text-justify">
-                {path.description}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div> */}
-
-      {/* <Timeline
-        sx={{
-          [`& .${timelineItemClasses.root}:before`]: {
-            flex: 0,
-            padding: 0,
-          },
-        }}
-      >
-        <TimelineItem>
-          {
-
-          <TimelineSeparator>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent>Eat</TimelineContent>
-        </TimelineItem>
-      }
-
-      </Timeline> */}
-
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="w-full lg:w-2/3 text-foreground">
-          <h2 className="text-2xl font-bold mb-4">
-            Why These Six Disciplines Were Chosen
-          </h2>
-          <p className="mb-4 text-foreground/60 text-justify">
-            Ghana’s{" "}
-            <span className="font-semibold">One Million Coders initiative</span>{" "}
-            envisions a digital future where every young person can build,
-            create, and participate in technology-driven opportunities. These
-            six disciplines—3D Modeling, VR Development, Web Development, Python
-            Programming, Entrepreneurship, and Drone Piloting—were chosen
-            strategically to align with this national goal.
-          </p>
-
-          <div className="space-y-6 text-sm leading-relaxed">
-            <div>
-              <h3 className="font-semibold text-lg">3D Modeling</h3>
-              <p className="text-justify text-foreground/60">
-                3D design powers industries from animation and gaming to
-                architecture and AR/VR. By mastering 3D Modeling, learners can
-                create digital assets that feed Ghana’s creative and tech
-                sectors—unlocking exportable digital work opportunities.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg">VR Development</h3>
-              <p className="text-justify text-foreground/60">
-                Virtual Reality opens doors to immersive learning, tourism, and
-                interactive design. Building VR expertise empowers Ghanaians to
-                move beyond consumption into creating world-class immersive
-                experiences.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg">Web Development</h3>
-              <p className="text-justify text-foreground/60">
-                Web Development remains the backbone of the global digital
-                economy. These skills provide the most direct route to
-                employability, freelance work, and startup innovation—central to
-                Ghana’s goal of becoming a regional digital talent hub.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg">Python Programming</h3>
-              <p className="text-justify text-foreground/60">
-                Python is simple yet powerful—used for automation, data
-                analysis, and AI. It bridges foundational coding skills with
-                real-world application, preparing learners for tech roles and
-                problem-solving across industries.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg">Entrepreneurship</h3>
-              <p className="text-justify text-foreground/60">
-                Beyond technical skills, an entrepreneurial mindset turns
-                knowledge into opportunity. This discipline helps learners build
-                ventures, validate ideas, and create jobs—aligning with the
-                national digital job creation agenda.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg">Drone Piloting</h3>
-              <p className="text-justify text-foreground/60">
-                Drone technology merges hardware, data, and digital control.
-                It’s transforming agriculture, logistics, and creative
-                industries. Training drone pilots extends Ghana’s innovation
-                footprint into new frontiers of work and data services.
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-8 text-sm text-justify text-foreground/60">
-            Together, these disciplines represent Ghana’s commitment to building
-            a generation of creators—not just coders. Each path offers a clear
-            progression from beginner to advanced level, ensuring that every
-            learner gains both the technical depth and creative confidence to
-            thrive in a digital-first world.
+      <div className="w-full md:w-2/5">
+        <h1 className="text-2xl font-bold mt-0 md:mt-6 mb-2">Ask Makafui</h1>
+        <p className="text-foreground/70 md:mb-5 text-justify leading-6">
+          Makafui is your personal AI guide on Nunya, ready to help you master
+          digital skills across all six disciplines. Makafui explains clearly,
+          breaks down complex concepts into simple, understandable steps, and
+          guides you through problems, while providing actionable, step-by-step
+          help whenever you get stuck.
+        </p>
+        <div className="">
+          <h1 className="text-2xl font-bold my-4 mt-8">
+            Confused about your learning path?
+          </h1>
+          <p className="leading-6 mb-5 text-foreground/50 text-justify">
+            If you're confused about anything related to your area of expertise
+            and what you'll learn in that area, you can read a bit about it here
+            and if you still need some clarification, don't hesistate to text
+            Makafui!
           </p>
         </div>
-        <div className="p-5 border border-sidebar bg-sidebar rounded-xl w-full lg:w-1/3">
-          <h1 className="text-xl font-bold mb-10">Relevant articles</h1>
+
+        <Timeline
+          sx={{
+            [`& .${timelineItemClasses.root}:before`]: {
+              flex: 0,
+              padding: 0,
+            },
+          }}
+          position="left"
+          className="-ml-10 -mr-4"
+        >
+          {skillPaths.map((skill, index) => (
+            <TimelineItem key={index}>
+              <TimelineSeparator className="">
+                <TimelineDot />
+                <TimelineConnector className="opacity-30" />
+              </TimelineSeparator>
+              <TimelineContent>
+                <div className="shadow-md px-8 py-5 mb-5 rounded-xl font-primary bg-sidebar">
+                  <p className="text-lg font-bold mb-2 text-left">
+                    {skill.title}
+                  </p>
+                  <p className="text-xs mb-5 text-foreground/50 text-justify leading-6">
+                    {skill.description}
+                  </p>
+                  <div className="flex gap-2 w-full flex-wrap">
+                    {skill.keySkills.map((keySkill, index) => (
+                      <div
+                        key={index}
+                        className="bg-accent px-2 py-2 rounded-lg text-xs"
+                      >
+                        {keySkill}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </TimelineContent>
+            </TimelineItem>
+          ))}
+        </Timeline>
+
+        <div className="p-5 border border-sidebar bg-sidebar rounded-xl w-full mr-15 mb-7">
+          <h1 className="text-xl font-bold mb-5">Relevant articles</h1>
           {skillPathArticles.map((article, index) => (
             <Collapsible
               key={index}
               defaultOpen={article.isActive}
-              className="group/collapsible mb-8"
+              className="group/collapsible mb-4"
             >
               <CollapsibleTrigger className="flex items-center gap-3">
-                <p className="text-lg leading-6 font-semibold">
+                <p className="text-sm leading-6 font-semibold">
                   {article.discipline}
                 </p>
                 <ChevronRight
@@ -384,10 +318,13 @@ const SkillPath = () => {
                     className="flex border-l pl-5 border-border gap-2"
                     key={index}
                   >
-                    <Plus size={10} className="text-foreground/50 mt-1" />
+                    <NotepadText
+                      size={10}
+                      className="text-foreground/50 mt-1"
+                    />
                     <a
                       href={subArticle.url}
-                      className="block text-foreground/50 pb-2"
+                      className="block text-foreground/50 pb-2 text-xs"
                       target="_blank"
                     >
                       {subArticle.title}
@@ -403,4 +340,4 @@ const SkillPath = () => {
   );
 };
 
-export default SkillPath;
+export default NunyaAssistant;

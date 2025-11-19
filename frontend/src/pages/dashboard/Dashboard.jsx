@@ -15,6 +15,7 @@ const Dashboard = () => {
   const { loggedUser, userProfile, isLoading } = useUser();
   const [lastCourse, setLastCourse] = useState();
   const [isFetching, setIsFetching] = useState(true);
+  const [badgeList, setBadgeList] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +37,13 @@ const Dashboard = () => {
           .eq("id", userCoursesData.course.instructor_id)
           .single();
 
+        const { data: completedBadgesData, error: completedBadgesError } =
+          await supabase
+            .from("user_courses")
+            .select("course(title, badge(title))")
+            .eq("user_id", loggedUser.id)
+            .eq("status", "completed");
+
         if (!userCoursesData) {
           setLastCourse({
             ...userCoursesData,
@@ -43,18 +51,15 @@ const Dashboard = () => {
           });
         }
 
-        if (instructorError || userCoursesError)
-          throw Error(courseError || userCoursesError);
+        if (instructorError || userCoursesError || completedBadgesError)
+          throw Error(courseError || userCoursesError || completedBadgesError);
 
         setLastCourse({
           ...userCoursesData,
           ...instructorData,
         });
 
-        console.log({
-          ...userCoursesData,
-          ...instructorData,
-        });
+        setBadgeList(completedBadgesData);
       } catch (error) {
         console.log("Error fetching latest course: ", error);
       } finally {
@@ -209,14 +214,22 @@ const Dashboard = () => {
           <div className="text-foreground/50 mb-4">Study Schedule</div>
           <Calendar20 />
         </div>
-        <div className="bg-sidebar col-span-1 lg:row-span-1 rounded-xl py-4 px-8">
-          <div className="text-foreground/50 mb-4">Badges</div>
-          <div className="w-full">
-            <CarouselSpacing />
-          </div>
+        <div className="bg-sidebar col-span-1 lg:row-span-1 rounded-xl relative flex items-center justify-center px-8 py-12 md:py-0">
+          <div className="text-foreground/50 absolute top-4 left-8">Badges</div>
+          {badgeList.length !== 0 ? (
+            <div className="w-full">
+              <CarouselSpacing badgeList={badgeList} />
+            </div>
+          ) : (
+            <div className="w-full flex items-center justify-center">
+              You have not earned any badges yet
+            </div>
+          )}
         </div>
         <div className="bg-sidebar col-span-1 lg:col-span-2 lg:row-span-2 rounded-xl py-4 px-8">
-          <div className="text-foreground/50 mb-4">Your Stats</div>
+          <div className="text-foreground/50 mb-4">
+            Completed Lessons over the year
+          </div>
           <ChartAreaDefault />
         </div>
       </div>

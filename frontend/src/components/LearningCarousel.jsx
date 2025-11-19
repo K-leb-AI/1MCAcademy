@@ -42,7 +42,7 @@ export function CarouselSize({ courses }) {
                     </div>
                   </div>
 
-                  <div className="w-full bg-foreground/10 h-0.5 ounded-full mt-3">
+                  <div className="w-full bg-foreground/10 h-0.5 rounded-full mt-3">
                     <div
                       className="bg-primary h-0.5 rounded-full"
                       style={{ width: course.progress }}

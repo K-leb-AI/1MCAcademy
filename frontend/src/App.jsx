@@ -1,12 +1,11 @@
 import { Outlet } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { ModeToggle } from "./components/ThemeToggle";
 import { UserProvider } from "./utils/UserProvider";
+import ErrorBoundary from "./pages/dashboard/ErrorPage";
 
 function App() {
   return (
     <>
-      {/* <ModeToggle /> */}
       <Toaster />
       <UserProvider>
         <main>

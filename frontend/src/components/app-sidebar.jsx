@@ -6,14 +6,14 @@ import {
   LayoutDashboard,
   BookMarked,
   PenTool,
-  Waypoints,
-  Settings2,
+  BotMessageSquare,
+  Headset,
   MessageCircle,
   LogOut,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+// import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import { supabase } from "../supabaseClient";
 import toast from "react-hot-toast";
@@ -60,20 +60,20 @@ const data = {
       icon: PenTool,
     },
     {
-      title: "Skill Paths",
-      url: "/dashboard/skill-paths",
-      icon: Waypoints,
+      title: "Ask Makafui",
+      url: "/dashboard/assistant",
+      icon: BotMessageSquare,
     },
     {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: Settings2,
+      title: "Support",
+      url: "/dashboard/support",
+      icon: Headset,
     },
-    {
-      title: "Notifications",
-      url: "/dashboard/notifications",
-      icon: MessageCircle,
-    },
+    // {
+    //   title: "Notifications",
+    //   url: "/dashboard/notifications",
+    //   icon: MessageCircle,
+    // },
   ],
 };
 
@@ -83,9 +83,9 @@ export function AppSidebar({ ...props }) {
 
   const handleLogout = async () => {
     try {
+      navigate("/");
       await supabase.auth.signOut();
       toast.success("Successfully Logged Out");
-      navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Error logging out");

@@ -6,8 +6,8 @@ import MyLearning from "../pages/dashboard/MyLearning.jsx";
 import DashboardLayout from "../components/DashboardLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Courses from "../pages/dashboard/Courses.jsx";
-import SkillPath from "../pages/dashboard/SkillPath.jsx";
-import SettingsPage from "../pages/dashboard/Settings.jsx";
+import NunyaAssistant from "../pages/dashboard/NunyaAssistant.jsx";
+import SupportPage from "../pages/dashboard/Support.jsx";
 import Notifications from "../pages/dashboard/Notifications.jsx";
 import NotificationMessage from "../components/NotificationMessage.jsx";
 import Check from "../pages/auth/Check.jsx";
@@ -16,16 +16,19 @@ import LandingPage from "../pages/landingpage/LandingPage.jsx";
 import CourseDetail from "../pages/dashboard/CourseDetail.jsx";
 import NotFound from "../components/NotFound.jsx";
 import CourseContentPage from "../pages/dashboard/CourseContentPage.jsx";
+import UserProfile from "@/pages/dashboard/Profile.jsx";
+import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import ErrorPageComponent, {
+  ErrorBoundary,
+} from "../pages/dashboard/ErrorPage.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ErrorPageComponent statusCode={500} />,
     children: [
-      {
-        path: "*",
-        element: <NotFound />,
-      },
+      // Public routes - NO protection
       {
         path: "/",
         element: <LandingPage />,
@@ -46,9 +49,17 @@ const router = createBrowserRouter([
         path: "/auth/login",
         element: <Login />,
       },
+
+      // Protected routes - require authentication
       {
         path: "/dashboard",
-        element: <DashboardLayout />,
+        element: (
+          <ErrorBoundary>
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          </ErrorBoundary>
+        ),
         children: [
           {
             path: "/dashboard",
@@ -60,23 +71,35 @@ const router = createBrowserRouter([
           },
           {
             path: "/dashboard/courses/:courseId",
-            element: <CourseDetail />,
+            element: (
+              <ErrorBoundary>
+                <CourseDetail />
+              </ErrorBoundary>
+            ),
           },
           {
             path: "/dashboard/courses/:courseId/:lessonId",
-            element: <CourseContentPage />,
+            element: (
+              <ErrorBoundary>
+                <CourseContentPage />
+              </ErrorBoundary>
+            ),
           },
           {
             path: "/dashboard/my-learning",
             element: <MyLearning />,
           },
           {
-            path: "/dashboard/skill-paths",
-            element: <SkillPath />,
+            path: "/dashboard/assistant",
+            element: <NunyaAssistant />,
           },
           {
-            path: "/dashboard/settings",
-            element: <SettingsPage />,
+            path: "/dashboard/support",
+            element: <SupportPage />,
+          },
+          {
+            path: "/dashboard/profile",
+            element: <UserProfile />,
           },
           {
             path: "/dashboard/notifications",
@@ -89,6 +112,34 @@ const router = createBrowserRouter([
             ],
           },
         ],
+      },
+
+      // Error pages
+      {
+        path: "/error/offline",
+        element: <NotFound />,
+      },
+      {
+        path: "/error/401",
+        element: <ErrorPageComponent statusCode={401} />,
+      },
+      {
+        path: "/error/403",
+        element: <ErrorPageComponent statusCode={403} />,
+      },
+      {
+        path: "/error/500",
+        element: <ErrorPageComponent statusCode={500} />,
+      },
+      {
+        path: "/error/503",
+        element: <ErrorPageComponent statusCode={503} />,
+      },
+
+      // Catch-all 404
+      {
+        path: "*",
+        element: <ErrorPageComponent statusCode={404} />,
       },
     ],
   },

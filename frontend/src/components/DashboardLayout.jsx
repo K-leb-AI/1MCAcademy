@@ -19,11 +19,7 @@ import { ChevronRight } from "lucide-react";
 
 export default function Page() {
   const location = useLocation();
-  const navigate = useNavigate();
   const segments = location.pathname.split("/").filter((seg) => seg);
-
-  // const [loggedUser, setLoggedUser] = useState(null);
-  // const [isLoading, setIsLoading] = useState(true);
   const [courseTitle, setCourseTitle] = useState(null);
 
   const { loggedUser, isLoading } = useUser();
@@ -32,6 +28,13 @@ export default function Page() {
     const subseg = seg.split("-").join(" ");
     return subseg.charAt(0).toUpperCase() + subseg.slice(1);
   };
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLoading && !loggedUser) {
+      navigate("/error/401");
+    }
+  }, [loggedUser, isLoading, navigate]);
 
   // useEffect(() => {
   //   const handleAuth = async () => {

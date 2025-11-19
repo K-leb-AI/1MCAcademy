@@ -271,6 +271,8 @@ const MyLearning = () => {
           .eq("completed", true)
           .eq("user_id", loggedUser.id);
 
+        console.log(userCoursesData);
+
         if (userCoursesError || userLessonError) {
           console.log(
             "Error fetching user's courses: ",
