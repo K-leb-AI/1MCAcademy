@@ -20,5 +20,8 @@
   "homepage": "https://github.com/K-leb-AI/1MCAcademy#readme",
   "dependencies": {
     "react-markdown": "^10.1.0"
+  },
+  "overrides": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.6"
   }
 }
