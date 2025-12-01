@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ArrowRight, Menu, X, Phone } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BackgroundBeams } from "@/components/ui/shadcn-io/background-beams";
+import { motion, useScroll } from "motion/react";
 
 export const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -50,6 +51,8 @@ export const LandingPage = () => {
         "Our learners are supported by mentors, industry professionals, and alumni who guide them from learning to earning — connecting education to real career opportunities.",
     },
   ];
+
+  const { scrollYProgress } = useScroll();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -143,7 +146,16 @@ export const LandingPage = () => {
           About Us
         </h2>
         <div className="grid md:grid-cols-5 gap-12 w-full">
-          <div className="col-span-1 h-[50vh] rounded-xl bg-accent hidden md:block mt-8"></div>
+          <motion.div
+            initial={{ translateY: -150 }}
+            animate={
+              {
+                // translateY: scrollY,
+              }
+            }
+          >
+            <div className="col-span-1 h-[50vh] rounded-xl bg-accent hidden md:block mt-8"></div>
+          </motion.div>
           <div className="col-span-3 text-sm text-justify">
             <p className="text-foreground/60 leading-5.5">
               At Nunya, we believe that every Ghanaian — regardless of location

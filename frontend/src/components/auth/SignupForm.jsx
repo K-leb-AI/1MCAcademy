@@ -27,8 +27,6 @@ const SignupForm = () => {
   // const redirectTo = window.location.origin;
   // const redirectTo = import.meta.env.VITE_SITE_URL;
 
-  console.log(import.meta.env.VITE_MODE);
-
   const redirectTo =
     import.meta.env.VITE_MODE === "production"
       ? import.meta.env.VITE_SITE_URL

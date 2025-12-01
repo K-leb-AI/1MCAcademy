@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Waypoints, History, Bell } from "lucide-react";
 import { HiLightningBolt } from "react-icons/hi";
 import { IoPerson } from "react-icons/io5";
-import Calendar20 from "../../components/calendar-20";
+// import Calendar20 from "../../components/calendar-20";
 import { RiProgress8Fill } from "react-icons/ri";
 import { ChartAreaDefault } from "../../components/chart";
 import { CarouselSpacing } from "../../components/Carousel";
@@ -10,6 +10,8 @@ import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
 import { supabase } from "@/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import Leaderboard from "@/components/Leaderboard";
+// import { FaStar } from "react-icons/fa";
 
 const Dashboard = () => {
   const { loggedUser, userProfile, isLoading } = useUser();
@@ -67,7 +69,7 @@ const Dashboard = () => {
       }
     };
     fetchLastCourse();
-  }, []);
+  }, [lastCourse]);
 
   const handleContinue = (courseId, lessonId) => {
     navigate(`courses/${courseId}/${lessonId}`);
@@ -210,10 +212,8 @@ const Dashboard = () => {
             </button>
           </div>
         )}
-        <div className="relative bg-sidebar col-span-1 lg:row-span-2 lg:col-span-1 rounded-xl py-4 px-8">
-          <div className="text-foreground/50 mb-4">Study Schedule</div>
-          <Calendar20 />
-        </div>
+
+        <Leaderboard />
         <div className="bg-sidebar col-span-1 lg:row-span-1 rounded-xl relative flex items-center justify-center px-8 py-12 md:py-0">
           <div className="text-foreground/50 absolute top-4 left-8">Badges</div>
           {badgeList.length !== 0 ? (

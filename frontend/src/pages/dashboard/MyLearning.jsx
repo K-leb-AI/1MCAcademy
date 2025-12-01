@@ -390,17 +390,26 @@ const MyLearning = () => {
       {/* Section 4: Badges */}
       <div className="mt-12">
         <h2 className="text-xl font-semibold mb-4">Badges</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {completed.map((course, index) => (
-            <BadgeCard
-              key={index}
-              badgeName={course.course.badge.title}
-              badgeImage={course.course.badge.badge_img_url}
-              courseTitle={course.course.title}
-              className="w-full"
-            />
-          ))}
-        </div>
+        {completed.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {completed.map((course, index) => (
+              <BadgeCard
+                key={index}
+                badgeName={course.course.badge.title}
+                badgeImage={course.course.badge.badge_img_url}
+                courseTitle={course.course.title}
+                className="w-full"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex w-full justify-center items-center bg-sidebar rounded-xl py-8 flex-col animate-pulse">
+            <MdHourglassEmpty size={60} className="opacity-50" />
+            <p className="mt-4 opacity-50">
+              You haven't completed any courses yet
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

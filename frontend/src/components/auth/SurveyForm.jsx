@@ -304,6 +304,7 @@ export default function RecommendationSurvey() {
             user_id: loggedUser.id,
             region,
             email: loggedUser.email,
+            username: loggedUser.user_metadata.display_name,
           },
         ])
         .select()

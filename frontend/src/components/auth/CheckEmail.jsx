@@ -21,6 +21,8 @@ export const CheckEmail = () => {
           emailRedirectTo: `${redirectTo}/auth/survey`,
         },
       });
+
+      console.log(data);
       if (error) {
         console.log("Error resending magic link:", error.message);
       } else {
