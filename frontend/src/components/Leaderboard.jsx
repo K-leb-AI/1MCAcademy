@@ -13,9 +13,7 @@ const Leaderboard = () => {
     const handleFetchLeaderboard = async () => {
       try {
         const { data, error } = await supabase.from("leaderboard").select("*");
-        console.log(
-          data.findIndex((item) => item.username === "Nii Lantei Lamptey")
-        );
+        console.log(data);
         if (error) {
           console.error(error);
           return;
