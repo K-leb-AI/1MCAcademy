@@ -4,6 +4,7 @@ import Signup from "../pages/auth/Signup.jsx";
 import Login from "../pages/auth/Login.jsx";
 import MyLearning from "../pages/dashboard/MyLearning.jsx";
 import DashboardLayout from "../components/DashboardLayout.jsx";
+import InstructorDashboardLayout from "../components/instructorComponents/InstructorDashboardLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Courses from "../pages/dashboard/Courses.jsx";
 import NunyaAssistant from "../pages/dashboard/NunyaAssistant.jsx";
@@ -114,6 +115,17 @@ const router = createBrowserRouter([
         ],
       },
 
+      {
+        path: "/instructor-dashboard",
+        element: (
+          <ErrorBoundary>
+            <ProtectedRoute>
+              <InstructorDashboardLayout />
+            </ProtectedRoute>
+          </ErrorBoundary>
+        ),
+        children: [],
+      },
       // Error pages
       {
         path: "/error/offline",
