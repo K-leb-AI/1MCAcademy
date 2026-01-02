@@ -287,69 +287,69 @@ const CreateCourse = () => {
         <div
           className="flex gap-2 text-foreground/50 items-center mb-8 cursor-pointer hover:text-foreground/40"
           onClick={() => {
-            // navigate(-1);
+            navigate(-1);
 
-            const tryFunction = async () => {
-              try {
-                setIsSubmitting(true);
-                // TODO: Upload thumbnail to Supabase storage and get URL
-                const { data, error } = await supabase.storage
-                  .from("course_thumbnails") // Your bucket name
-                  .upload(
-                    `public/course_thumbnails/ ${thumbnail.name}`,
-                    thumbnail,
-                    {
-                      contentType: "image/jpeg", // Or 'image/jpeg', etc.
-                      // cacheControl: '3600', // Optional: cache control
-                      // upsert: false // Set to true to overwrite if file exists
-                    }
-                  );
+            // const tryFunction = async () => {
+            //   try {
+            //     setIsSubmitting(true);
+            //     // TODO: Upload thumbnail to Supabase storage and get URL
+            //     const { data, error } = await supabase.storage
+            //       .from("course_thumbnails") // Your bucket name
+            //       .upload(
+            //         `public/course_thumbnails/ ${thumbnail.name}`,
+            //         thumbnail,
+            //         {
+            //           contentType: "image/jpeg", // Or 'image/jpeg', etc.
+            //           // cacheControl: '3600', // Optional: cache control
+            //           // upsert: false // Set to true to overwrite if file exists
+            //         }
+            //       );
 
-                if (error) {
-                  console.error("Error uploading file:", error);
-                } else {
-                  console.log("File uploaded:", data);
-                  // Get the public URL (if public) or signed URL
-                  const { publicURL, error: urlError } = supabase.storage
-                    .from("course_thumbnail")
-                    .getPublicUrl(data.path);
-                  console.log("Public URL:", publicURL);
-                }
+            //     if (error) {
+            //       console.error("Error uploading file:", error);
+            //     } else {
+            //       console.log("File uploaded:", data);
+            //       // Get the public URL (if public) or signed URL
+            //       const { publicURL, error: urlError } = supabase.storage
+            //         .from("course_thumbnail")
+            //         .getPublicUrl(data.path);
+            //       console.log("Public URL:", publicURL);
+            //     }
 
-                // TODO: Create course in database with formData
-                console.log("Form data:", formData);
-                console.log("Lessons:", lessons);
-                console.log("Thumbnail:", thumbnail);
+            //     // TODO: Create course in database with formData
+            //     console.log("Form data:", formData);
+            //     console.log("Lessons:", lessons);
+            //     console.log("Thumbnail:", thumbnail);
 
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+            //     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-                setSuccessMessage("Course created successfully!");
-                setFormData({
-                  title: "",
-                  description: "",
-                  level: "",
-                  price: "",
-                  thumbnail_url: "",
-                  skill_path: "",
-                  badge: "",
-                  learning_plan: "",
-                  requirements: "",
-                  learning_outcomes: "",
-                });
-                removeThumbnail();
-                setLessons([]);
+            //     setSuccessMessage("Course created successfully!");
+            //     setFormData({
+            //       title: "",
+            //       description: "",
+            //       level: "",
+            //       price: "",
+            //       thumbnail_url: "",
+            //       skill_path: "",
+            //       badge: "",
+            //       learning_plan: "",
+            //       requirements: "",
+            //       learning_outcomes: "",
+            //     });
+            //     removeThumbnail();
+            //     setLessons([]);
 
-                setTimeout(() => setSuccessMessage(""), 3000);
-              } catch (error) {
-                console.error("Error creating course:", error);
-                setErrors({
-                  submit: "Failed to create course. Please try again.",
-                });
-              } finally {
-                setIsSubmitting(false);
-              }
-            };
-            tryFunction();
+            //     setTimeout(() => setSuccessMessage(""), 3000);
+            //   } catch (error) {
+            //     console.error("Error creating course:", error);
+            //     setErrors({
+            //       submit: "Failed to create course. Please try again.",
+            //     });
+            //   } finally {
+            //     setIsSubmitting(false);
+            //   }
+            // };
+            // tryFunction();
           }}
         >
           <ArrowLeft size={12} /> Back
