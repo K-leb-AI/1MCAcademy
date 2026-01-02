@@ -8,10 +8,11 @@ export const getYouTubeInfo = async (url) => {
   if (!videoId) {
     throw new Error("Invalid YouTube URL");
   }
-
   try {
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,contentDetails&key=AIzaSyApNyRElF3qbtmvy1kF8XZwT33JVDZy0pc`
+      `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,contentDetails&key=${
+        import.meta.env.VITE_YOUTUBE_API_KEY
+      }`
     );
 
     if (!response.ok) {
