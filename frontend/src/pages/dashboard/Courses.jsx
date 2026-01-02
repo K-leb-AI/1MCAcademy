@@ -27,7 +27,7 @@ const Courses = () => {
           course.title?.toLowerCase().includes(value.toLowerCase()) ||
           course.topic?.toLowerCase().includes(value.toLowerCase()) ||
           course.description?.toLowerCase().includes(value.toLowerCase()) ||
-          course.instructor?.name?.toLowerCase().includes(value.toLowerCase())
+          course.profile?.username?.toLowerCase().includes(value.toLowerCase())
       )
     );
   };
@@ -40,7 +40,7 @@ const Courses = () => {
           .select(
             `
             *,
-            instructor (name),
+            profile (username),
             badge (title),
             lessons (runtime)
           `

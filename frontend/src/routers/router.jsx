@@ -4,7 +4,6 @@ import Signup from "../pages/auth/Signup.jsx";
 import Login from "../pages/auth/Login.jsx";
 import MyLearning from "../pages/dashboard/MyLearning.jsx";
 import DashboardLayout from "../components/DashboardLayout.jsx";
-import InstructorDashboardLayout from "../components/instructorComponents/InstructorDashboardLayout.jsx";
 import Dashboard from "../pages/dashboard/Dashboard.jsx";
 import Courses from "../pages/dashboard/Courses.jsx";
 import NunyaAssistant from "../pages/dashboard/NunyaAssistant.jsx";
@@ -23,13 +22,15 @@ import ErrorPageComponent, {
   ErrorBoundary,
 } from "../pages/dashboard/ErrorPage.jsx";
 
+import InstructorDashboard from "@/pages/instructorDashhboard/InstructorDashboard.jsx";
+import CreateCourse from "@/pages/instructorDashhboard/CreateCourse.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     errorElement: <ErrorPageComponent statusCode={500} />,
     children: [
-      // Public routes - NO protection
       {
         path: "/",
         element: <LandingPage />,
@@ -52,6 +53,17 @@ const router = createBrowserRouter([
       },
 
       // Protected routes - require authentication
+      // Instructor dashboard routes
+      {
+        path: "/instructor",
+        element: <InstructorDashboard />,
+      },
+      {
+        path: "/instructor/create-course",
+        element: <CreateCourse />,
+      },
+
+      //Student dashboard routes
       {
         path: "/dashboard",
         element: (
@@ -113,18 +125,6 @@ const router = createBrowserRouter([
             ],
           },
         ],
-      },
-
-      {
-        path: "/instructor-dashboard",
-        element: (
-          <ErrorBoundary>
-            <ProtectedRoute>
-              <InstructorDashboardLayout />
-            </ProtectedRoute>
-          </ErrorBoundary>
-        ),
-        children: [],
       },
       // Error pages
       {

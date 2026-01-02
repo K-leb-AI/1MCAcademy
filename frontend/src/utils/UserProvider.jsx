@@ -53,6 +53,7 @@ export const UserProvider = ({ children }) => {
         }
 
         const user = data?.user;
+
         await handleAuth(user);
       } catch (err) {
         console.error("Unexpected error in checkInitialAuth:", err);

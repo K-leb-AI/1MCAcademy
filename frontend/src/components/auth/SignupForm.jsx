@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
+// import { axios } from "@/lib/axios";
+import axios from "axios";
 
 const SignupForm = () => {
   const [name, setName] = useState("");
@@ -56,11 +58,7 @@ const SignupForm = () => {
     }
     try {
       //make api call here
-      const { data: existingData, error: existingDataError } = await supabase
-        .from("profile")
-        .select("email")
-        .eq("email", email)
-        .single();
+      const { signupData } = await axios.get("/api");
 
       if (existingData === null) {
         const { error } = await supabase.auth.signUp({

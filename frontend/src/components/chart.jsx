@@ -18,21 +18,6 @@ import {
 } from "@/components/ui/chart";
 import { useUser } from "@/utils/UserProvider";
 
-// const chartData = [
-//   { month: "January", completedLessons: 0, completedHours: 0 },
-//   { month: "February", completedLessons: 0, completedHours: 0 },
-//   { month: "March", completedLessons: 0, completedHours: 0 },
-//   { month: "April", completedLessons: 0, completedHours: 0 },
-//   { month: "May", completedLessons: 0, completedHours: 0 },
-//   { month: "June", completedLessons: 0, completedHours: 0 },
-//   { month: "July", completedLessons: 0, completedHours: 0 },
-//   { month: "August", completedLessons: 0, completedHours: 0 },
-//   { month: "September", completedLessons: 0, completedHours: 0 },
-//   { month: "October", completedLessons: 0, completedHours: 0 },
-//   { month: "November", completedLessons: 1, completedHours: 2.25 },
-//   { month: "December", completedLessons: 0, completedHours: 0 },
-// ];
-
 const chartConfig = {
   completedLessons: {
     label: "Completed lessons",
@@ -77,6 +62,8 @@ export function ChartAreaDefault() {
 
         monthCounts[month]++;
 
+        console.log(monthCounts);
+
         const runtime = lesson.lessons?.runtime || 0;
         const hours = runtime / 3600;
         monthHours[month] += hours;
@@ -105,10 +92,12 @@ export function ChartAreaDefault() {
       }));
 
       setChartData(formatted);
+      console.log(formatted);
     } catch (error) {
       console.error("Error fetching chart data:", error);
     }
   };
+
   return (
     <Card>
       <CardContent>

@@ -150,7 +150,7 @@ export const LandingPage = () => {
             initial={{ translateY: -150 }}
             animate={
               {
-                // translateY: scrollY,
+                translateY: scrollY,
               }
             }
           >

@@ -20,6 +20,8 @@ const Dashboard = () => {
   const [badgeList, setBadgeList] = useState([]);
   const navigate = useNavigate();
 
+  console.log(userProfile);
+
   useEffect(() => {
     const fetchLastCourse = async () => {
       try {
@@ -54,7 +56,9 @@ const Dashboard = () => {
         }
 
         if (instructorError || userCoursesError || completedBadgesError)
-          throw Error(courseError || userCoursesError || completedBadgesError);
+          throw Error(
+            instructorError || userCoursesError || completedBadgesError
+          );
 
         setLastCourse({
           ...userCoursesData,

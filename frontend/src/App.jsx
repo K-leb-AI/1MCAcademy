@@ -1,17 +1,17 @@
 import { Outlet } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { UserProvider } from "./utils/UserProvider";
-import ErrorBoundary from "./pages/dashboard/ErrorPage";
+
 
 function App() {
   return (
     <>
+    <UserProvider>
       <Toaster />
-      <UserProvider>
-        <main>
-          <Outlet />
-        </main>
-      </UserProvider>
+      <main>
+        <Outlet />
+      </main>
+    </UserProvider>
     </>
   );
 }

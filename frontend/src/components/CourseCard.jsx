@@ -103,7 +103,7 @@ const CourseCard = ({ course, onClick }) => {
         </div>
         <div className="text-foreground/50 text-xs mt-3 flex gap-2">
           <IoPerson size={12} />{" "}
-          <span>Instructor: {course.instructor?.name}</span>
+          <span>Instructor: {course.profile?.username}</span>
         </div>
         <div className="text-foreground/50 flex items-center mt-1 gap-2 ">
           <Trophy size={13} />

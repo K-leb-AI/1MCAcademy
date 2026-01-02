@@ -51,7 +51,7 @@ const CourseDetail = () => {
       try {
         const { data: courseData, error: courseError } = await supabase
           .from("course")
-          .select("*, instructor: instructor_id (name, bio), lessons (runtime)")
+          .select("*, profile(username, bio), lessons (runtime)")
           .eq("id", courseId)
           .single();
 
@@ -210,13 +210,13 @@ const CourseDetail = () => {
         <p className="text-2xl font-bold mt-8">About your Instructor</p>
         <div className="flex gap-2 items-center mt-5">
           <div className="w-8 aspect-square rounded-full bg-primary grid place-items-center text-white text-lg font-bold">
-            {course.instructor.name[0]}
+            {course.profile.username[0]}
           </div>
-          <div className="text-lg font-semibold">{course.instructor.name}</div>
+          <div className="text-lg font-semibold">{course.profile.username}</div>
         </div>
 
         <p className="mt-2 text-justify text-foreground/50 leading-6">
-          {course.instructor.bio}
+          {course.profile.bio}
         </p>
       </div>
     </div>

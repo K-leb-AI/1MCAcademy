@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 
-const ProfileButton = (onClick) => {
+const ProfileButton = () => {
   const { loggedUser } = useUser();
   const navigate = useNavigate();
 
