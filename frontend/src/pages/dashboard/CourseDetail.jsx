@@ -11,21 +11,38 @@ const CourseDetail = () => {
   const courseId = useLocation().pathname.split("/").pop();
   const [course, setCourse] = useState();
   const [isFetching, setIsFetching] = useState(true);
-  const { loggedUser, isLoading } = useUser();
+  const { loggedUser, userProfile, isLoading } = useUser();
   const navigate = useNavigate();
 
   const handleEnroll = async () => {
     setIsFetching(true);
-    if (course.status === "enrolled" || course.status === "completed")
+    if (course.status)
       navigate(`/dashboard/courses/${courseId}/${course.last_lesson_id}`);
     else {
       try {
-        const { data, error } = await supabase.from("user_courses").insert([
-          {
-            course_id: course.id,
-            user_id: loggedUser.id,
-          },
-        ]);
+        const { data: firstLesson, error: firstLessonError } = await supabase
+          .from("lessons")
+          .select("id")
+          .eq("course_id", courseId)
+          .order("created_at", { ascending: true })
+          .maybeSingle();
+
+        if (firstLessonError)
+          return console.log(
+            "Error while fetching first lesson: ",
+            firstLessonError
+          );
+
+        const { data, error } = await supabase
+          .from("user_courses")
+          .insert([
+            {
+              course_id: course.id,
+              user_id: loggedUser.id,
+              last_lesson_id: firstLesson.id,
+            },
+          ])
+          .select("*");
 
         if (error) {
           console.error("Error enrolling in course:", error.message);
@@ -36,7 +53,7 @@ const CourseDetail = () => {
         console.log("Enrollment successful:", data);
         toast.success("Successfully enrolled!");
         setCourse((prev) => ({ ...prev, status: "enrolled" }));
-        navigate(`/dashboard/courses/${courseId}/1`);
+        navigate(`/dashboard/courses/${courseId}/${firstLesson.id}`);
       } catch (err) {
         console.error("Unexpected error enrolling:", err);
         toast.error("An unexpected error occurred.");
@@ -51,7 +68,7 @@ const CourseDetail = () => {
       try {
         const { data: courseData, error: courseError } = await supabase
           .from("course")
-          .select("*, profile(username, bio), lessons (runtime)")
+          .select("*, lessons (runtime)")
           .eq("id", courseId)
           .single();
 
@@ -79,8 +96,6 @@ const CourseDetail = () => {
             courseData.lessons[i].runtime + totalCourseRuntime;
           i++;
         }
-
-        console.log(totalCourseRuntime);
 
         setCourse({
           ...courseData,
@@ -210,13 +225,13 @@ const CourseDetail = () => {
         <p className="text-2xl font-bold mt-8">About your Instructor</p>
         <div className="flex gap-2 items-center mt-5">
           <div className="w-8 aspect-square rounded-full bg-primary grid place-items-center text-white text-lg font-bold">
-            {course.profile.username[0]}
+            {userProfile.username[0]}
           </div>
-          <div className="text-lg font-semibold">{course.profile.username}</div>
+          <div className="text-lg font-semibold">{userProfile.username}</div>
         </div>
 
         <p className="mt-2 text-justify text-foreground/50 leading-6">
-          {course.profile.bio}
+          {userProfile.bio}
         </p>
       </div>
     </div>

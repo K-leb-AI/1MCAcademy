@@ -266,7 +266,7 @@ const InstructorDashboard = () => {
             {/* Enrollment Chart */}
             <div className="lg:col-span-2 bg-card rounded-xl border border-border p-6 shadow-sm">
               <h3 className="text-lg font-bold text-foreground mb-6">
-                Student Enrollment Trend
+                Student Enrollment Trend This Year
               </h3>
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData}>
@@ -421,7 +421,7 @@ const InstructorDashboard = () => {
                           key={index}
                           className="flex items-start gap-4 pb-4 border-b border-border last:border-0"
                         >
-                          <div className="w-10 h-10 rounded-[calc(var(--radius)-2px)] bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 rounded-[calc(var(--radius)-2px)] bg-primary/10 flex items-center justify-center shrink-0">
                             <span className="text-sm font-bold text-primary">
                               {comment.profile?.username?.[0]?.toUpperCase() ||
                                 "U"}

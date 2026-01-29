@@ -3,7 +3,7 @@ import { Upload, X, AlertCircle, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getYouTubeInfo } from "@/lib/getYouTubeInfo";
 import { supabase } from "@/supabaseClient";
-
+import { useUser } from "@/utils/UserProvider";
 const CreateCourse = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -17,7 +17,8 @@ const CreateCourse = () => {
     requirements: "",
     learning_outcomes: "",
   });
-
+  const { userProfile, isLoading } = useUser();
+  const [courseUploadStatus, setCourseUploadStatus] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,49 +27,39 @@ const CreateCourse = () => {
   const navigate = useNavigate();
   const [isExtractingLesson, setIsExtractingLesson] = useState(false);
   const [lessons, setLessons] = useState([]);
-
   const [newLesson, setNewLesson] = useState({
     youtube_url: "",
     title: "",
     runtime: 0,
     description: "",
   });
-
   const [lessonErrors, setLessonErrors] = useState({
     youtube_url: "",
     title: "",
     runtime: "",
     description: "",
   });
-
-  const levels = ["Beginner", "Intermediate", "Advanced"];
-
+  const levels = ["beginner", "intermediate", "advanced"];
   const skillPaths = [
-    "Entrepreneurship",
-    "Web Development",
-    "Python Programming",
-    "3D Modeling and Printing",
-    "Drone Piloting",
-    "Virtual Reality Development",
+    "web development",
+    "python programming",
+    "3d modeling and printing",
+    "drone piloting",
+    "entrepreneurship",
+    "virtual reality development",
   ];
-
   const badges = [
-    { value: "champion", label: "🏆 Champion Badge" },
-    { value: "expert", label: "⭐ Expert Badge" },
-    { value: "master", label: "👑 Master Badge" },
-    { value: "innovator", label: "💡 Innovator Badge" },
-    { value: "creator", label: "🎨 Creator Badge" },
-    { value: "builder", label: "🔨 Builder Badge" },
-    { value: "pioneer", label: "🚀 Pioneer Badge" },
+    {
+      value: "Junior Programmer",
+      label: "⭐ Junior Programmer",
+    },
   ];
-
   // Format duration from seconds to readable format
   const formatDuration = (seconds) => {
     if (!seconds || seconds <= 0) return "0m";
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-
     if (hours > 0) {
       return `${hours}h ${minutes}m ${secs}s`;
     }
@@ -77,7 +68,6 @@ const CreateCourse = () => {
     }
     return `${secs}s`;
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -91,7 +81,6 @@ const CreateCourse = () => {
       }));
     }
   };
-
   const handleThumbnailChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -102,7 +91,6 @@ const CreateCourse = () => {
         }));
         return;
       }
-
       if (file.size > 5 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
@@ -110,7 +98,6 @@ const CreateCourse = () => {
         }));
         return;
       }
-
       setThumbnail(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -123,7 +110,6 @@ const CreateCourse = () => {
       }));
     }
   };
-
   const removeThumbnail = () => {
     setThumbnail(null);
     setThumbnailPreview(null);
@@ -132,15 +118,13 @@ const CreateCourse = () => {
       thumbnail_url: "",
     }));
   };
-
   const validateForm = () => {
     const newErrors = {};
-
     if (!formData.title.trim()) newErrors.title = "Course title is required";
     if (!formData.description.trim())
       newErrors.description = "Description is required";
     if (!formData.level) newErrors.level = "Please select a level";
-    if (!formData.price || isNaN(formData.price) || formData.price <= 0)
+    if (!formData.price || isNaN(formData.price) || formData.price < 0)
       newErrors.price = "Valid price is required";
     if (!thumbnailPreview)
       newErrors.thumbnail_url = "Thumbnail image is required";
@@ -153,14 +137,11 @@ const CreateCourse = () => {
       newErrors.requirements = "Requirements are required";
     if (!formData.learning_outcomes.trim())
       newErrors.learning_outcomes = "Learning outcomes are required";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const validateLesson = () => {
     const newErrors = {};
-
     if (!newLesson.youtube_url.trim()) {
       newErrors.youtube_url = "YouTube URL is required";
     }
@@ -173,16 +154,142 @@ const CreateCourse = () => {
     if (!newLesson.description.trim()) {
       newErrors.description = "Lesson description is required";
     }
-
     setLessonErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  window.addEventListener("focus", async () => {
+    console.log(`runnin...`);
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session) {
+      // If the session is bugged or gone, refresh it explicitly
+      await supabase.auth.refreshSession();
+    }
+
+    console.log(`done...`);
+  });
+
+  const uploadThumbnail = async () => {
+    try {
+      setCourseUploadStatus("Uploading course thumbnail...");
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("course_thumbnails")
+        .upload(`${Date.now()}_${thumbnail.name}`, thumbnail, {
+          contentType: thumbnail.type,
+        });
+
+      if (uploadError) {
+        throw new Error(
+          `Error uploading thumbnail image: ${uploadError.message}`
+        );
+      }
+
+      setCourseUploadStatus("Received thumbnail path...");
+
+      return uploadData.path;
+    } catch (error) {
+      console.error(`Error in thumbnail upload:`, error);
+      throw error;
+    }
+  };
+
+  const handleSubmit = async () => {
+    console.log("Form submission started");
 
     if (!validateForm()) {
+      console.log("Form validation failed");
       return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const path = await uploadThumbnail();
+      console.log(path, "path");
+      const publicURL = `${import.meta.env.VITE_SUPABASE_BUCKET_URL}${path}`;
+      console.log("Public URL generated:", publicURL);
+
+      console.log("Course insertion starting...");
+
+      setCourseUploadStatus("Course insertion starting...");
+
+      const { data: insertCourseData, error: insertCourseError } =
+        await supabase
+          .from("course")
+          .insert({
+            title: formData.title,
+            badge_title: formData.badge,
+            price: parseFloat(formData.price),
+            rating: 0,
+            thumbnail_url: publicURL,
+            instructor_id: userProfile.id,
+            skill_path: formData.skill_path,
+            level: formData.level,
+            description: formData.description,
+            learning_plan: formData.learning_plan,
+            learning_outcomes: formData.learning_outcomes,
+            requirements: formData.requirements,
+            is_published: true,
+          })
+          .select("id")
+          .maybeSingle();
+
+      if (insertCourseError) {
+        throw new Error(`Error creating course: ${insertCourseError.message}`);
+      }
+
+      setCourseUploadStatus("Course data saved!! Inserting Lessons...");
+
+      const courseId = insertCourseData.id;
+      console.log("Course created with ID:", courseId);
+
+      console.log("Inserting lessons...");
+      const lessonsToInsert = lessons.map((lesson) => ({
+        course_id: courseId,
+        title: lesson.title,
+        description: lesson.description,
+        video_url: lesson.youtube_url,
+        runtime: lesson.runtime,
+      }));
+
+      const { data: insertLessonData, error: insertLessonError } =
+        await supabase
+          .from("lessons")
+          .insert(lessonsToInsert) // Pass the entire array here
+          .select()
+          .maybeSingle();
+
+      if (insertLessonError) {
+        throw new Error(`Error inserting lesson: ${insertLessonError.message}`);
+      }
+
+      setCourseUploadStatus("Lessons Saved!! Course Created Successfully...");
+
+      console.log(insertLessonData);
+      console.log("All lessons inserted successfully");
+
+      setSuccessMessage("Course created successfully!");
+      setFormData({
+        title: "",
+        description: "",
+        level: "",
+        price: "",
+        thumbnail_url: "",
+        skill_path: "",
+        badge: "",
+        learning_plan: "",
+        requirements: "",
+        learning_outcomes: "",
+      });
+      removeThumbnail();
+      setLessons([]);
+    } catch (error) {
+      console.error("Error creating course:", error);
+      setErrors({
+        submit: "Failed to create course. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+      console.log("Submission complete");
     }
   };
 
@@ -215,7 +322,6 @@ const CreateCourse = () => {
       description: "",
     });
   };
-
   const extractYouTubeInfo = async (url) => {
     if (!url.trim()) {
       setLessonErrors((prev) => ({
@@ -224,9 +330,7 @@ const CreateCourse = () => {
       }));
       return;
     }
-
     setIsExtractingLesson(true);
-
     try {
       const data = await getYouTubeInfo(url);
       setNewLesson((prev) => ({
@@ -249,12 +353,10 @@ const CreateCourse = () => {
       setIsExtractingLesson(false);
     }
   };
-
   const handleLessonAdd = () => {
     if (!validateLesson()) {
       return;
     }
-
     setLessons((prev) => [
       ...prev,
       {
@@ -262,7 +364,6 @@ const CreateCourse = () => {
         id: Date.now(),
       },
     ]);
-
     setNewLesson({
       youtube_url: "",
       title: "",
@@ -276,7 +377,6 @@ const CreateCourse = () => {
       description: "",
     });
   };
-
   const removeLesson = (id) => {
     setLessons((prev) => prev.filter((lesson) => lesson.id !== id));
   };
@@ -284,73 +384,11 @@ const CreateCourse = () => {
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        {/* <button onClick={insertCourseData}>Test Submission</button> */}
+        <p>{courseUploadStatus}</p>
         <div
           className="flex gap-2 text-foreground/50 items-center mb-8 cursor-pointer hover:text-foreground/40"
-          onClick={() => {
-            navigate(-1);
-
-            // const tryFunction = async () => {
-            //   try {
-            //     setIsSubmitting(true);
-            //     // TODO: Upload thumbnail to Supabase storage and get URL
-            //     const { data, error } = await supabase.storage
-            //       .from("course_thumbnails") // Your bucket name
-            //       .upload(
-            //         `public/course_thumbnails/ ${thumbnail.name}`,
-            //         thumbnail,
-            //         {
-            //           contentType: "image/jpeg", // Or 'image/jpeg', etc.
-            //           // cacheControl: '3600', // Optional: cache control
-            //           // upsert: false // Set to true to overwrite if file exists
-            //         }
-            //       );
-
-            //     if (error) {
-            //       console.error("Error uploading file:", error);
-            //     } else {
-            //       console.log("File uploaded:", data);
-            //       // Get the public URL (if public) or signed URL
-            //       const { publicURL, error: urlError } = supabase.storage
-            //         .from("course_thumbnail")
-            //         .getPublicUrl(data.path);
-            //       console.log("Public URL:", publicURL);
-            //     }
-
-            //     // TODO: Create course in database with formData
-            //     console.log("Form data:", formData);
-            //     console.log("Lessons:", lessons);
-            //     console.log("Thumbnail:", thumbnail);
-
-            //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-            //     setSuccessMessage("Course created successfully!");
-            //     setFormData({
-            //       title: "",
-            //       description: "",
-            //       level: "",
-            //       price: "",
-            //       thumbnail_url: "",
-            //       skill_path: "",
-            //       badge: "",
-            //       learning_plan: "",
-            //       requirements: "",
-            //       learning_outcomes: "",
-            //     });
-            //     removeThumbnail();
-            //     setLessons([]);
-
-            //     setTimeout(() => setSuccessMessage(""), 3000);
-            //   } catch (error) {
-            //     console.error("Error creating course:", error);
-            //     setErrors({
-            //       submit: "Failed to create course. Please try again.",
-            //     });
-            //   } finally {
-            //     setIsSubmitting(false);
-            //   }
-            // };
-            // tryFunction();
-          }}
+          onClick={() => navigate(-1)}
         >
           <ArrowLeft size={12} /> Back
         </div>
@@ -363,7 +401,6 @@ const CreateCourse = () => {
             Fill in the details below to create your new course
           </p>
         </div>
-
         {/* Success Message */}
         {successMessage && (
           <div className="mb-6 p-4 bg-chart-4/10 border border-chart-4 text-chart-4 rounded-xl flex items-center gap-3">
@@ -371,7 +408,6 @@ const CreateCourse = () => {
             <p>{successMessage}</p>
           </div>
         )}
-
         {/* Error Message */}
         {errors.submit && (
           <div className="mb-6 p-4 bg-destructive/10 border border-destructive text-destructive rounded-xl flex items-center gap-3">
@@ -379,17 +415,23 @@ const CreateCourse = () => {
             <p>{errors.submit}</p>
           </div>
         )}
-
         {/* Form */}
-        <div className="bg-card rounded-xl border border-border p-8 space-y-8 shadow-sm">
+        <form
+          className="bg-card rounded-xl border border-border p-8 space-y-8 shadow-sm"
+          onSubmit={(e) => e.preventDefault()}
+        >
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label
+              className="block text-sm font-medium text-foreground mb-2"
+              htmlFor="title"
+            >
               Course Title *
             </label>
             <input
               type="text"
               name="title"
+              id="title"
               value={formData.title}
               onChange={handleInputChange}
               placeholder="e.g., Introduction to Web Development"
@@ -403,13 +445,16 @@ const CreateCourse = () => {
               <p className="text-xs text-destructive mt-1.5">{errors.title}</p>
             )}
           </div>
-
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label
+              className="block text-sm font-medium text-foreground mb-2"
+              htmlFor="description"
+            >
               Description *
             </label>
             <textarea
+              id="description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
@@ -427,15 +472,18 @@ const CreateCourse = () => {
               </p>
             )}
           </div>
-
           {/* Two Column Layout */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Level */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label
+                className="block text-sm font-medium text-foreground mb-2"
+                htmlFor="level"
+              >
                 Level *
               </label>
               <select
+                id="level"
                 name="level"
                 value={formData.level}
                 onChange={handleInputChange}
@@ -447,7 +495,7 @@ const CreateCourse = () => {
               >
                 <option value="">Select a level</option>
                 {levels.map((level) => (
-                  <option key={level} value={level.toLowerCase()}>
+                  <option key={level} value={level} className="capitalize">
                     {level}
                   </option>
                 ))}
@@ -458,15 +506,18 @@ const CreateCourse = () => {
                 </p>
               )}
             </div>
-
             {/* Price */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label
+                className="block text-sm font-medium text-foreground mb-2"
+                htmlFor="price"
+              >
                 Price (GH₵) *
               </label>
               <input
                 type="number"
                 name="price"
+                id="price"
                 value={formData.price}
                 onChange={handleInputChange}
                 placeholder="e.g., 99.99"
@@ -485,10 +536,12 @@ const CreateCourse = () => {
               )}
             </div>
           </div>
-
           {/* Thumbnail Image */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label
+              className="block text-sm font-medium text-foreground mb-2"
+              htmlFor="thumbnail"
+            >
               Thumbnail Image *
             </label>
             {thumbnailPreview ? (
@@ -525,6 +578,7 @@ const CreateCourse = () => {
                   </p>
                 </div>
                 <input
+                  id="thumbnail"
                   type="file"
                   accept="image/*"
                   onChange={handleThumbnailChange}
@@ -538,15 +592,18 @@ const CreateCourse = () => {
               </p>
             )}
           </div>
-
           {/* Skill Path and Badge */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Skill Path */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label
+                className="block text-sm font-medium text-foreground mb-2"
+                htmlFor="skill_path"
+              >
                 Skill Path *
               </label>
               <select
+                id="skill_path"
                 name="skill_path"
                 value={formData.skill_path}
                 onChange={handleInputChange}
@@ -558,7 +615,7 @@ const CreateCourse = () => {
               >
                 <option value="">Select a skill path</option>
                 {skillPaths.map((path) => (
-                  <option key={path} value={path.toLowerCase()}>
+                  <option key={path} value={path} className="capitalize">
                     {path}
                   </option>
                 ))}
@@ -569,13 +626,16 @@ const CreateCourse = () => {
                 </p>
               )}
             </div>
-
             {/* Badge */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label
+                className="block text-sm font-medium text-foreground mb-2"
+                htmlFor="badge"
+              >
                 Course Badge *
               </label>
               <select
+                id="badge"
                 name="badge"
                 value={formData.badge}
                 onChange={handleInputChange}
@@ -586,8 +646,8 @@ const CreateCourse = () => {
                 }`}
               >
                 <option value="">Select a badge</option>
-                {badges.map((badge) => (
-                  <option key={badge.value} value={badge.value}>
+                {badges.map((badge, index) => (
+                  <option key={index} value={badge.value}>
                     {badge.label}
                   </option>
                 ))}
@@ -599,13 +659,16 @@ const CreateCourse = () => {
               )}
             </div>
           </div>
-
           {/* Learning Plan */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label
+              className="block text-sm font-medium text-foreground mb-2"
+              htmlFor="learning_plan"
+            >
               Learning Plan *
             </label>
             <textarea
+              id="learning_plan"
               name="learning_plan"
               value={formData.learning_plan}
               onChange={handleInputChange}
@@ -623,13 +686,16 @@ const CreateCourse = () => {
               </p>
             )}
           </div>
-
           {/* Requirements */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label
+              className="block text-sm font-medium text-foreground mb-2"
+              htmlFor="requirements"
+            >
               Requirements *
             </label>
             <textarea
+              id="requirements"
               name="requirements"
               value={formData.requirements}
               onChange={handleInputChange}
@@ -647,13 +713,16 @@ const CreateCourse = () => {
               </p>
             )}
           </div>
-
           {/* Learning Outcomes */}
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label
+              className="block text-sm font-medium text-foreground mb-2"
+              htmlFor="learning_outcomes"
+            >
               Learning Outcomes *
             </label>
             <textarea
+              id="learning_outcomes"
               name="learning_outcomes"
               value={formData.learning_outcomes}
               onChange={handleInputChange}
@@ -671,23 +740,25 @@ const CreateCourse = () => {
               </p>
             )}
           </div>
-
           {/* Add Lessons Section */}
           <div className="border-t border-border pt-8">
             <h2 className="text-2xl font-bold text-foreground mb-6">
               Add Lessons
             </h2>
-
             {/* Add Lesson Form */}
             <div className="bg-muted/30 rounded-[calc(var(--radius)-2px)] p-6 mb-6 space-y-4">
               {/* YouTube URL */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  className="block text-sm font-medium text-foreground mb-2"
+                  htmlFor="youtube_url"
+                >
                   YouTube URL *
                 </label>
                 <div className="flex gap-2">
                   <input
                     type="url"
+                    id="youtube_url"
                     name="youtube_url"
                     value={newLesson.youtube_url}
                     onChange={(e) => {
@@ -720,14 +791,17 @@ const CreateCourse = () => {
                   </p>
                 )}
               </div>
-
               {/* Lesson Title */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  className="block text-sm font-medium text-foreground mb-2"
+                  htmlFor="lesson_title"
+                >
                   Lesson Title *
                 </label>
                 <input
                   type="text"
+                  id="lesson_title"
                   name="title"
                   value={newLesson.title}
                   onChange={(e) =>
@@ -746,15 +820,18 @@ const CreateCourse = () => {
                   </p>
                 )}
               </div>
-
               {/* Runtime */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  className="block text-sm font-medium text-foreground mb-2"
+                  htmlFor="runtime"
+                >
                   Duration (seconds) *
                 </label>
                 <div className="flex gap-2">
                   <input
                     type="number"
+                    id="runtime"
                     name="runtime"
                     value={newLesson.runtime}
                     onChange={(e) =>
@@ -782,14 +859,17 @@ const CreateCourse = () => {
                   </p>
                 )}
               </div>
-
               {/* Lesson Description */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  className="block text-sm font-medium text-foreground mb-2"
+                  htmlFor="lesson_description"
+                >
                   Lesson Description *
                 </label>
                 <textarea
                   name="description"
+                  id="lesson_description"
                   value={newLesson.description}
                   onChange={(e) =>
                     setNewLesson((prev) => ({
@@ -811,7 +891,6 @@ const CreateCourse = () => {
                   </p>
                 )}
               </div>
-
               {/* Add Lesson Button */}
               <button
                 type="button"
@@ -821,7 +900,6 @@ const CreateCourse = () => {
                 Add Lesson
               </button>
             </div>
-
             {/* Lessons List */}
             {lessons.length > 0 && (
               <div className="space-y-3">
@@ -847,7 +925,7 @@ const CreateCourse = () => {
                     <button
                       type="button"
                       onClick={() => removeLesson(lesson.id)}
-                      className="p-2 hover:bg-destructive/10 rounded-[calc(var(--radius)-4px)] transition-colors flex-shrink-0"
+                      className="p-2 hover:bg-destructive/10 rounded-[calc(var(--radius)-4px)] transition-colors shrink-0"
                     >
                       <X className="w-5 h-5 text-destructive" />
                     </button>
@@ -856,12 +934,12 @@ const CreateCourse = () => {
               </div>
             )}
           </div>
-
           {/* Submit Button */}
           <div className="flex gap-4 pt-4 border-t border-border">
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              // onClick={uploadThumbnail}
+              // disabled={isSubmitting}
               className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Creating Course..." : "Create Course"}
@@ -873,10 +951,9 @@ const CreateCourse = () => {
               Clear Form
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
 };
-
 export default CreateCourse;

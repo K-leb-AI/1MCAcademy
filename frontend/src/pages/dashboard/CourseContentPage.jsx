@@ -12,8 +12,10 @@ const CourseContentPage = () => {
   const { loggedUser, isLoading } = useUser();
 
   const pathParts = location.pathname.split("/").filter(Boolean);
-  const lessonId = parseInt(pathParts[pathParts.length - 1], 10);
+  const lessonId = pathParts[pathParts.length - 1];
   const courseId = pathParts[pathParts.length - 2];
+
+  console.log(lessonId);
 
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [courseLessons, setCourseLessons] = useState([]);
@@ -150,12 +152,14 @@ const CourseContentPage = () => {
                 video_url,
                 course_id,
                 course: course_id (title),
-                user_lessons!left (lesson_id, completed, user_id)
+                user_lessons(lesson_id, completed, user_id)
                 `
             )
             .eq("course_id", courseId)
             .eq("user_lessons.user_id", loggedUser.id)
             .order("id", { ascending: true });
+
+        console.log(fetchLessonsData);
 
         if (fetchLessonsError) throw fetchLessonsError;
         if (!fetchLessonsData?.length) {
