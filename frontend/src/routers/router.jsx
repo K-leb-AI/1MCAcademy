@@ -22,8 +22,9 @@ import ErrorPageComponent, {
   ErrorBoundary,
 } from "../pages/dashboard/ErrorPage.jsx";
 
-import InstructorDashboard from "@/pages/instructorDashhboard/InstructorDashboard.jsx";
-import CreateCourse from "@/pages/instructorDashhboard/CreateCourse.jsx";
+import InstructorDashboard from "@/pages/instructorDashboard/InstructorDashboard.jsx";
+import CreateCourse from "@/pages/instructorDashboard/CreateCourse.jsx";
+import InstructorProfile from "@/pages/instructorDashboard/InstructorProfile.jsx";
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ const router = createBrowserRouter([
       {
         path: "/instructor/create-course",
         element: <CreateCourse />,
+      },
+      {
+        path: "/instructor/profile",
+        element: <InstructorProfile />,
       },
 
       //Student dashboard routes

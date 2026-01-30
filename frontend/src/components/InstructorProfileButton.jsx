@@ -1,9 +1,8 @@
 import { useUser } from "@/utils/UserProvider";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 
-const ProfileButton = () => {
+const InstructorProfileButton = () => {
   const { userProfile } = useUser();
   const navigate = useNavigate();
 
@@ -11,7 +10,7 @@ const ProfileButton = () => {
     <div
       className="px-4 py-3 bg-sidebar rounded-xl absolute top-5 right-4 md:right-10 z-20 flex items-center gap-3 cursor-pointer hover:text-primary hover:bg-primary/20 duration-300 group"
       onClick={() => {
-        navigate("/dashboard/profile");
+        navigate("/instructor/profile");
       }}
     >
       <div className="rounded-full bg-accent grid place-items-center p-2 group-hover:bg-primary/50 group-hover:text-white duration-300">
@@ -29,4 +28,4 @@ const ProfileButton = () => {
   );
 };
 
-export default ProfileButton;
+export default InstructorProfileButton;

@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { getYouTubeInfo } from "@/lib/getYouTubeInfo";
 import { supabase } from "@/supabaseClient";
 import { useUser } from "@/utils/UserProvider";
+import CourseCreationProgress from "@/components/CourseCreationProgress";
+
 const CreateCourse = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -18,7 +20,10 @@ const CreateCourse = () => {
     learning_outcomes: "",
   });
   const { userProfile, isLoading } = useUser();
-  const [courseUploadStatus, setCourseUploadStatus] = useState("");
+  const [courseUploadStatus, setCourseUploadStatus] = useState({
+    status: "",
+    index: 0,
+  });
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -171,7 +176,10 @@ const CreateCourse = () => {
 
   const uploadThumbnail = async () => {
     try {
-      setCourseUploadStatus("Uploading course thumbnail...");
+      setCourseUploadStatus({
+        status: "Uploading course thumbnail...",
+        index: 1,
+      });
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("course_thumbnails")
         .upload(`${Date.now()}_${thumbnail.name}`, thumbnail, {
@@ -180,12 +188,14 @@ const CreateCourse = () => {
 
       if (uploadError) {
         throw new Error(
-          `Error uploading thumbnail image: ${uploadError.message}`
+          `Error uploading thumbnail image: ${uploadError.message}`,
         );
       }
 
-      setCourseUploadStatus("Received thumbnail path...");
-
+      setCourseUploadStatus({
+        status: "Received thumbnail path...",
+        index: 2,
+      });
       return uploadData.path;
     } catch (error) {
       console.error(`Error in thumbnail upload:`, error);
@@ -210,7 +220,10 @@ const CreateCourse = () => {
 
       console.log("Course insertion starting...");
 
-      setCourseUploadStatus("Course insertion starting...");
+      setCourseUploadStatus({
+        status: "Course insertion starting...",
+        index: 3,
+      });
 
       const { data: insertCourseData, error: insertCourseError } =
         await supabase
@@ -237,7 +250,10 @@ const CreateCourse = () => {
         throw new Error(`Error creating course: ${insertCourseError.message}`);
       }
 
-      setCourseUploadStatus("Course data saved!! Inserting Lessons...");
+      setCourseUploadStatus({
+        status: "Course data saved!! Inserting Lessons...",
+        index: 4,
+      });
 
       const courseId = insertCourseData.id;
       console.log("Course created with ID:", courseId);
@@ -262,7 +278,10 @@ const CreateCourse = () => {
         throw new Error(`Error inserting lesson: ${insertLessonError.message}`);
       }
 
-      setCourseUploadStatus("Lessons Saved!! Course Created Successfully...");
+      setCourseUploadStatus({
+        status: "Lessons Saved!! Course Created Successfully...",
+        index: 5,
+      });
 
       console.log(insertLessonData);
       console.log("All lessons inserted successfully");
@@ -383,9 +402,12 @@ const CreateCourse = () => {
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+      {isSubmitting && (
+        <CourseCreationProgress courseStatus={courseUploadStatus} />
+      )}
       <div className="max-w-4xl mx-auto">
         {/* <button onClick={insertCourseData}>Test Submission</button> */}
-        <p>{courseUploadStatus}</p>
+        {/* <p>{courseUploadStatus}</p> */}
         <div
           className="flex gap-2 text-foreground/50 items-center mb-8 cursor-pointer hover:text-foreground/40"
           onClick={() => navigate(-1)}

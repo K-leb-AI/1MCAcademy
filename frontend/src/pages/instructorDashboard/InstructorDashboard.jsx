@@ -12,7 +12,8 @@ import {
 } from "recharts";
 import { Users, BookOpen, Plus, Clock, Award } from "lucide-react";
 import { ModeToggle } from "@/components/ThemeToggle";
-import ProfileButton from "@/components/ProfileButton";
+// import ProfileButton from "@/components/ProfileButton";
+import InstructorProfileButton from "@/components/InstructorProfileButton";
 import StatCard from "@/components/InstructorStatCard";
 import { useUser } from "@/utils/UserProvider";
 import Loading from "@/components/Loading";
@@ -50,7 +51,7 @@ const InstructorDashboard = () => {
               badge (title),
               lessons (runtime),
               user_courses(user_id, status, enrolled_at)
-              `
+              `,
             )
             .eq("instructor_id", userProfile.id);
 
@@ -96,18 +97,21 @@ const InstructorDashboard = () => {
             user_course.status === "enrolled" && enrollmentCount++;
           });
 
+          console.log(enrollmentCount);
+
           setCompletion([
             {
               name: "In Progress",
               value:
-                enrollmentCount / instructorCoursesData[0].user_courses.length,
+                enrollmentCount /
+                  instructorCoursesData[0].user_courses.length || 0,
             },
             {
               name: "Completed",
               value:
                 (instructorCoursesData[0].user_courses.length -
                   enrollmentCount) /
-                instructorCoursesData[0].user_courses.length,
+                  instructorCoursesData[0].user_courses.length || 0,
             },
           ]);
         }
@@ -138,7 +142,7 @@ const InstructorDashboard = () => {
       const { data, error } = await supabase
         .from("lesson_comment")
         .select(
-          "content, created_at, lessons(course_id, title), profile(username)"
+          "content, created_at, lessons(course_id, title), profile(username)",
         )
         .eq("lessons.course_id", course.id);
 
@@ -155,7 +159,7 @@ const InstructorDashboard = () => {
   // Calculate total students from courses
   const totalStudents = instructorCourses.reduce(
     (sum, course) => sum + (course.user_courses?.length || 0),
-    0
+    0,
   );
 
   const totalRating =
@@ -179,7 +183,7 @@ const InstructorDashboard = () => {
 
   return (
     <>
-      <ProfileButton />
+      <InstructorProfileButton />
       <ModeToggle />
 
       <main className="max-w-7xl mx-auto px-6 pb-16 pt-22 min-h-screen">
@@ -193,7 +197,8 @@ const InstructorDashboard = () => {
               !
             </h2>
             <p className="text-muted-foreground mt-1">
-              Here's your teaching overview for this week
+              Here's your teaching overview for all the courses you have
+              published or drafted
             </p>
           </div>
           <button
@@ -434,7 +439,7 @@ const InstructorDashboard = () => {
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {new Date(
-                                  comment.created_at
+                                  comment.created_at,
                                 ).toLocaleDateString()}
                               </p>
                             </div>

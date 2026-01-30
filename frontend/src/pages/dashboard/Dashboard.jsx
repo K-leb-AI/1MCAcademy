@@ -20,20 +20,26 @@ const Dashboard = () => {
   const [badgeList, setBadgeList] = useState([]);
   const navigate = useNavigate();
 
-  console.log(userProfile);
-
   useEffect(() => {
     const fetchLastCourse = async () => {
       try {
+        // const { data: userCoursesData, error: userCoursesError } =
+        //   await supabase
+        //     .from("user_courses")
+        //     .select(
+        //       "progress, lessons(id, title), course(id, title, level, instructor_id)",
+        //     )
+        //     .eq("id", userProfile.last_course_id)
+        //     .eq("user_id", loggedUser.id)
+        //     .single();
+
         const { data: userCoursesData, error: userCoursesError } =
           await supabase
             .from("user_courses")
             .select(
-              "progress, lessons(id, title), course(id, title, level, instructor_id)"
-            )
-            .eq("id", userProfile.last_course_id)
-            .eq("user_id", loggedUser.id)
-            .single();
+              "progress, lessons(id, title), course(id, title, level, instructor_id)",
+            );
+        console.log(userCoursesData);
 
         const { data: instructorData, error: instructorError } = await supabase
           .from("instructor")
@@ -57,7 +63,7 @@ const Dashboard = () => {
 
         if (instructorError || userCoursesError || completedBadgesError)
           throw Error(
-            instructorError || userCoursesError || completedBadgesError
+            instructorError || userCoursesError || completedBadgesError,
           );
 
         setLastCourse({

@@ -79,11 +79,14 @@ const CourseCard = ({ course, onClick }) => {
         </TooltipContent>
       </Tooltip>
       <div>
-        <img
-          src={course.thumbnail_url}
-          className="aspect-3/2 rounded-xl object-cover object-center w-500px"
-          loading="lazy"
-        />
+        <div className="aspect-3/2 rounded-xl">
+          <img
+            src={course.thumbnail_url}
+            className="w-full h-full bg-foreground/30 rounded-xl object-cover object-center"
+            loading="lazy"
+          />
+        </div>
+
         <div className=" flex gap-2 items-center mt-3 justify-between">
           <h3 className="text-lg font-semibold ">{course.title}</h3>
           <p className="px-3 py-1 bg-primary/10 border border-primary text-primary text-xs font-medium rounded-full capitalize flex items-center">

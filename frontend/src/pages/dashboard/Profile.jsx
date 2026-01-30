@@ -9,10 +9,12 @@ import {
   Calendar,
   User,
 } from "lucide-react";
+import { TbSwitch3 } from "react-icons/tb";
 import { useUser } from "../../utils/UserProvider";
 import Loading from "../../components/Loading";
 import toast from "react-hot-toast";
 import { supabase } from "@/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfile() {
   const { loggedUser, userProfile, isLoading } = useUser();
@@ -22,6 +24,7 @@ export default function UserProfile() {
     full_name: "",
     bio: "",
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userProfile) {
@@ -62,7 +65,6 @@ export default function UserProfile() {
     try {
       await supabase.auth.signOut();
       toast.success("Successfully Logged Out");
-      navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Error logging out");
@@ -195,15 +197,25 @@ export default function UserProfile() {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
-                      }
+                      },
                     )
                   : "Unknown"}
               </p>
             </div>
           </div>
 
-          {/* Logout Button */}
-          <div className="pt-12 flex w-full justify-center">
+          {/* Logout Button and Switch Button*/}
+          <div className="flex items-center justify-center gap-2 absolute bottom-4 left-1/2 -translate-x-1/2">
+            {userProfile.role === "instructor" && (
+              <button
+                onClick={() => navigate("/instructor")}
+                className="flex items-center justify-center gap-2 px-12 py-4 bg-foreground text-white rounded-md hover:bg-foreground/90 cursor-pointer duration-300 font-medium text-sm"
+              >
+                <TbSwitch3 className="w-4 h-4" />
+                Switch to instructor dashboard
+              </button>
+            )}
+
             <button
               onClick={handleLogout}
               className="flex items-center justify-center gap-2 px-12 py-4 bg-red-500 text-white rounded-md hover:bg-red-500/90 cursor-pointer duration-300 font-medium text-sm"
