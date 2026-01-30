@@ -12,8 +12,10 @@ export const getYouTubeInfo = async (url) => {
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet,contentDetails&key=${
         import.meta.env.VITE_YOUTUBE_API_KEY
-      }`
+      }`,
     );
+
+    console.log(response);
 
     if (!response.ok) {
       throw new Error("Failed to fetch video info");
