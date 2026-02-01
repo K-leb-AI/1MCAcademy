@@ -30,20 +30,16 @@ const CourseDetail = () => {
         if (firstLessonError)
           return console.log(
             "Error while fetching first lesson: ",
-            firstLessonError
+            firstLessonError,
           );
 
-        const { data, error } = await supabase
-          .from("user_courses")
-          .insert([
-            {
-              course_id: course.id,
-              user_id: loggedUser.id,
-              last_lesson_id: firstLesson.id,
-            },
-          ])
-          .select("*");
-
+        const { data, error } = await supabase.from("user_courses").insert([
+          {
+            course_id: course.id,
+            user_id: loggedUser.id,
+            last_lesson_id: firstLesson.id,
+          },
+        ]);
         if (error) {
           console.error("Error enrolling in course:", error.message);
           toast.error("Could not enroll in the course. Please try again.");
@@ -175,8 +171,8 @@ const CourseDetail = () => {
               {course?.status === "completed"
                 ? "Revisit course"
                 : course?.status === "enrolled"
-                ? "Go to course"
-                : "Enroll Now"}
+                  ? "Go to course"
+                  : "Enroll Now"}
             </button>
           </div>
         </div>

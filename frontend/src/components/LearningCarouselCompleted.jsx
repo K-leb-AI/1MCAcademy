@@ -36,7 +36,7 @@ export function CompletedCarouselSize({ courses }) {
                         {course.course.title}
                       </h3>
                       <p className="text-sm text-foreground/50">
-                        {course.course.instructor.name}
+                        {course.course.profile.username}
                       </p>
                     </div>
                   </div>

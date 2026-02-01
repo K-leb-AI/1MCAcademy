@@ -38,12 +38,12 @@ const Dashboard = () => {
             .from("user_courses")
             .select(
               "progress, lessons(id, title), course(id, title, level, instructor_id)",
-            );
-        console.log(userCoursesData);
+            )
+            .maybeSingle();
 
         const { data: instructorData, error: instructorError } = await supabase
-          .from("instructor")
-          .select("name")
+          .from("profile")
+          .select("username")
           .eq("id", userCoursesData.course.instructor_id)
           .single();
 

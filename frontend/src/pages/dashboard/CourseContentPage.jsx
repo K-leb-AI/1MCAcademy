@@ -5,17 +5,16 @@ import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 import { useUser } from "../../utils/UserProvider";
 import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const CourseContentPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { loggedUser, isLoading } = useUser();
+  const { loggedUser, userProfile, isLoading } = useUser();
 
   const pathParts = location.pathname.split("/").filter(Boolean);
   const lessonId = pathParts[pathParts.length - 1];
   const courseId = pathParts[pathParts.length - 2];
-
-  console.log(lessonId);
 
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [courseLessons, setCourseLessons] = useState([]);
@@ -23,12 +22,13 @@ const CourseContentPage = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [currentCourse, setCurrentCourse] = useState(null);
+  const [comment, setComment] = useState("");
 
   // Helper to extract embed URL
   const getEmbedUrl = (url) => {
     if (!url) return null;
     const videoIdMatch = url.match(
-      /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/
+      /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/,
     );
     const videoId = videoIdMatch ? videoIdMatch[1] : null;
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
@@ -64,9 +64,6 @@ const CourseContentPage = () => {
             last_course_id: user_course_id.id,
           })
           .eq("user_id", loggedUser.id);
-
-      console.log(updateProfileData);
-      console.log(updateProfileError);
 
       // Lesson already completed - just update last_lesson_id
       if (checkLessonData) {
@@ -108,7 +105,7 @@ const CourseContentPage = () => {
 
       const totalLessons = courseLessons.length;
       const progressPercentage = Math.floor(
-        ((completedLessons?.length || 0) / totalLessons) * 100
+        ((completedLessons?.length || 0) / totalLessons) * 100,
       );
 
       // Update course progress
@@ -151,13 +148,12 @@ const CourseContentPage = () => {
                 description,
                 video_url,
                 course_id,
-                course: course_id (title),
-                user_lessons(lesson_id, completed, user_id)
-                `
+                course: course_id (title)
+                `,
             )
             .eq("course_id", courseId)
-            .eq("user_lessons.user_id", loggedUser.id)
-            .order("id", { ascending: true });
+            // .eq("user_lessons.user_id", loggedUser.id)
+            .order("created_at", { ascending: true });
 
         console.log(fetchLessonsData);
 
@@ -169,7 +165,7 @@ const CourseContentPage = () => {
         }
 
         const selected = fetchLessonsData.find(
-          (lesson) => lesson.id === lessonId
+          (lesson) => lesson.id === lessonId,
         );
 
         if (!selected) {
@@ -260,7 +256,7 @@ const CourseContentPage = () => {
 
   // Find lesson index (1-based for display, 0-based for array)
   const currentLessonIndex = courseLessons.findIndex(
-    (l) => l.id === selectedLesson.id
+    (l) => l.id === selectedLesson.id,
   );
   const isFirstLesson = currentLessonIndex === 0;
   const isLastLesson = currentLessonIndex === courseLessons.length - 1;
@@ -271,7 +267,7 @@ const CourseContentPage = () => {
       navigate(
         `/dashboard/courses/${courseId}/${
           courseLessons[currentLessonIndex - 1].id
-        }`
+        }`,
       );
     }
   };
@@ -283,7 +279,7 @@ const CourseContentPage = () => {
       navigate(
         `/dashboard/courses/${courseId}/${
           courseLessons[currentLessonIndex + 1].id
-        }`
+        }`,
       );
     }
   };
@@ -309,6 +305,31 @@ const CourseContentPage = () => {
     }
   };
 
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+  };
+
+  const handleSend = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("lesson_comment")
+        .insert({
+          content: comment,
+          user_id: userProfile.id,
+          lesson_id: lessonId,
+        })
+        .select();
+
+      if (error) throw new Error(error.message);
+
+      console.log(data);
+      console.log(error);
+      setComment("");
+      toast.success("Review successfully submitted!");
+    } catch (error) {
+      console.log("Error while sending comment: ", error);
+    }
+  };
   return (
     <div className="mb-5 px-4 md:px-10 grid md:grid-cols-3 gap-5 mt-10">
       {/* Left: Video and content */}
@@ -334,10 +355,24 @@ const CourseContentPage = () => {
             {selectedLesson.description}
           </p>
         </div>
+
+        <div className="mt-8">
+          <h2 className="font-semibold text-xl mb-4">Lesson Review Comments</h2>
+          <textarea
+            className="w-full px-6 py-4 bg-sidebar rounded-md focus:outline-none placeholder:text-foreground/50 resize-none"
+            rows="6"
+            placeholder="Send a review comment to the instructor about this lesson"
+            onChange={(e) => handleCommentChange(e)}
+            value={comment}
+          />
+          <Button variant="default" className="mt-3" onClick={handleSend}>
+            Send Comment
+          </Button>
+        </div>
       </div>
 
       {/* Right: Lesson list */}
-      <div className="w-full h-[55vh] md:h-[84vh] col-span-1 rounded-xl border border-border relative">
+      <div className="w-full h-[55vh] md:h-[84vh] col-span-1 rounded-xl border border-border sticky top-26">
         <div className="bg-sidebar/60 p-4 font-semibold text-lg border-border border-b rounded-tl-xl">
           {selectedLesson.course[0]?.title || "Lessons"} Lesson List
         </div>
@@ -345,7 +380,7 @@ const CourseContentPage = () => {
         <ul className="overflow-y-scroll h-[70%]">
           {courseLessons.map((lesson) => {
             const isCompleted = lesson.user_lessons?.some(
-              (ul) => ul.completed === true
+              (ul) => ul.completed === true,
             );
             const isSelected = selectedLesson.id === lesson.id;
 
@@ -391,8 +426,8 @@ const CourseContentPage = () => {
                 canFinish
                   ? "bg-primary hover:bg-primary/80 text-white cursor-pointer"
                   : isLastLesson
-                  ? "bg-accent/50 text-foreground/30 cursor-not-allowed"
-                  : "hover:bg-accent/50 cursor-pointer"
+                    ? "bg-accent/50 text-foreground/30 cursor-not-allowed"
+                    : "hover:bg-accent/50 cursor-pointer"
               }`}
               onClick={handleNext}
             >
