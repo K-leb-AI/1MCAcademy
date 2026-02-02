@@ -246,22 +246,6 @@ const CreateCourse = () => {
           .select("id")
           .maybeSingle();
 
-      console.log({
-        title: formData.title,
-        badge_title: formData.badge,
-        price: parseFloat(formData.price),
-        rating: 0,
-        thumbnail_url: publicURL,
-        instructor_id: userProfile.id,
-        skill_path: formData.skill_path,
-        level: formData.level,
-        description: formData.description,
-        learning_plan: formData.learning_plan,
-        learning_outcomes: formData.learning_outcomes,
-        requirements: formData.requirements,
-        is_published: true,
-      });
-
       if (insertCourseError) {
         throw new Error(`Error creating course: ${insertCourseError.message}`);
       }
@@ -275,22 +259,13 @@ const CreateCourse = () => {
       console.log("Course created with ID:", courseId);
 
       console.log("Inserting lessons...");
-      const lessonsToInsert = lessons.map((lesson) => {
-        console.log({
-          course_id: courseId,
-          title: lesson.title,
-          description: lesson.description,
-          video_url: lesson.youtube_url,
-          runtime: lesson.runtime,
-        });
-        return {
-          course_id: courseId,
-          title: lesson.title,
-          description: lesson.description,
-          video_url: lesson.youtube_url,
-          runtime: lesson.runtime,
-        };
-      });
+      const lessonsToInsert = lessons.map((lesson) => ({
+        course_id: courseId,
+        title: lesson.title,
+        description: lesson.description,
+        video_url: lesson.youtube_url,
+        runtime: lesson.runtime,
+      }));
 
       const { data: insertLessonData, error: insertLessonError } =
         await supabase
